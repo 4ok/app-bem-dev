@@ -6,6 +6,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
+    "babel-preset-es2015": "^6.9.0",
     "borschik": "^1.6.0",
     "borschik-tech-cleancss": "^2.1.0",
     "enb": "^1.3.0",

@@ -1,4 +1,4 @@
-const EnbConfig = require('components/enb/config');
+const EnbConfig = require('./components/config');
 
 module.exports = (config) => {
     const enbConfig = new EnbConfig(config);

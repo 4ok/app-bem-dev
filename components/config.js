@@ -11,7 +11,7 @@ const enbBrowserJs = require('enb-js/techs/browser-js');
 const enbFileMerge = require('enb/techs/file-merge');
 const enbBemtree = require('enb-bemxjst/techs/bemtree');
 const enbBemhtml = require('enb-bemxjst/techs/bemhtml');
-const enbGateMethod = require('app-bem/components/enb/techs/gate-method');
+const enbGateMethod = require('app-bem-enb/techs/gate-method');
 
 // Postcss plugins
 const postcss = {
