@@ -11,7 +11,6 @@ const enbBrowserJs = require('enb-js/techs/browser-js');
 const enbFileMerge = require('enb/techs/file-merge');
 const enbBemtree = require('enb-bemxjst/techs/bemtree');
 const enbBemhtml = require('enb-bemxjst/techs/bemhtml');
-const enbGateMethod = require('app-bem-dev/techs/gate-method');
 
 // Postcss plugins
 const postcss = {
@@ -22,14 +21,6 @@ const postcss = {
 
 // Final technologies
 const FINAL_TECHS = {
-    'gate-method' : {
-        sourceSuffixes : 'gate.js',
-        target : '?.gate.js',
-        borschik : {
-            target : '?.gate.min.js',
-            tech : 'js',
-        },
-    },
     bemtree : {
         sourceSuffixes : 'bemtree.js',
         target : '?.bemtree.js',
@@ -91,7 +82,6 @@ module.exports = class {
     _getTechs(levels) {
         return [].concat(
             this._getFilesTechs(levels),
-            this._getGateMethodTechs(),
             this._getBemtreeTechs(),
             this._getServerBemhtmlTechs(),
             this._getBrowserBemhtmlTechs(),
@@ -152,22 +142,6 @@ module.exports = class {
             [enbBaseTechs.deps],
             [enbBaseTechs.files],
         ];
-    }
-
-    _getGateMethodTechs() {
-        const tech = FINAL_TECHS['gate-method'];
-        let result = [];
-
-        if (tech) {
-            result = [
-                [enbGateMethod, {
-                    sourceSuffixes : tech.sourceSuffixes,
-                    target : tech.target,
-                }],
-            ];
-        }
-
-        return result;
     }
 
     _getBemtreeTechs() {
