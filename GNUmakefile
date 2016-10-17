@@ -105,7 +105,7 @@ restart:
 
 # Make bem tech(s)
 .PHONY: bem
-bem:
+bem: bem-configs.create
 	@echo '===> Make bem tech(s)'
 	$(ENB) make ${tech} --no-cache --dir $(BEM_PATH)
 
@@ -118,7 +118,7 @@ bem-techs.clean:
 # Create bem configs
 bem-configs.create:
 	@echo '===> Creating bem configs'
-	ln -sf $(NODE_MODULES_PATH)/app-core/configs/bem/borschik.json $(BEM_PATH)/.borschik
+	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/borschik.json $(BEM_PATH)/.borschik
 
 .PHONY: bem-configs.delete
 bem-configs.delete:
