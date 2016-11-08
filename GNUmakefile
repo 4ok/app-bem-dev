@@ -3,8 +3,6 @@
 
 # Current environment
 export NODE_ENV ?= development
-export BEMTREE_ENV := NODE_ENV
-export BEMHTML_ENV := NODE_ENV
 
 # Project name
 #PROJECT_NAME = unknown
@@ -123,7 +121,7 @@ bem-configs.create:
 .PHONY: bem-configs.delete
 bem-configs.delete:
 	@echo '===> Deleting bem configs'
-	rm -rf $(BEM_PATH)/.borschik
+	rm -f $(BEM_PATH)/.borschik
 
 ### Structure
 ### ---------
@@ -135,7 +133,7 @@ static-dir.create:
 
 # Clean
 .PHONY: clean
-clean: bem-configs.delete temp-files.delete bem-techs.clean static-dir.delete
+clean: bem-configs.delete static-dir.delete bem-techs.clean temp-files.delete
 
 # Delete static dir
 .PHONY: static-dir.delete
