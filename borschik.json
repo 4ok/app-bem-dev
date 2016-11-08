@@ -1,12 +1,10 @@
 {
     "freeze_paths" : {
-        "**/@*.+(png|gif|jpg|jpeg|woff|eot|ico)" : ":base64:",
-        "**/@*.svg"                              : ":encodeURIComponent:",
-        "**"                                     : "../public/static/"
+        "**/@*.+(png|gif|jpg|jpeg|woff|eot|ico)": ":base64:",
+        "**/@*.svg": ":encodeURIComponent:",
+        "**": "../../public/static/"
     },
-
     "freeze_nesting_level" : 0,
-
     "paths" : {
         "../public/": "/"
     }
