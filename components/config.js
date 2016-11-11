@@ -27,6 +27,7 @@ const FINAL_TECHS = {
         borschik : {
             target : '?.bemtree.min.js',
             tech : 'js',
+            minify : false, // TODO: uglify no support es6
         },
     },
     bemhtml : {
@@ -35,6 +36,7 @@ const FINAL_TECHS = {
         borschik : {
             target : '?.bemhtml.min.js',
             tech : 'js',
+            minify : false, // TODO: uglify no support es6
         },
     },
     'browser-js' : {
