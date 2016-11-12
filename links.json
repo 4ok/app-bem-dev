@@ -1,0 +1,4 @@
+{
+    "css": "bundles/index/index.min.css",
+    "js": "bundles/index/index.browser.min.js"
+}

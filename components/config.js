@@ -21,6 +21,22 @@ const postcss = {
 
 // Final technologies
 const FINAL_TECHS = {
+    css : {
+        sourceSuffixes : ['styl', 'css', 'post.css'],
+        target : '?.css',
+        borschik : {
+            target : '?.min.css',
+            tech : 'cleancss',
+        },
+    },
+    'browser-js' : {
+        sourceSuffixes : ['js', 'vanilla.js', 'browser.js'],
+        target : '?.browser.js',
+        borschik : {
+            target : '?.browser.min.js',
+            tech : 'js',
+        },
+    },
     bemtree : {
         sourceSuffixes : 'bemtree.js',
         target : '?.bemtree.js',
@@ -37,22 +53,6 @@ const FINAL_TECHS = {
             target : '?.bemhtml.min.js',
             tech : 'js',
             minify : false, // TODO: uglify no support es6
-        },
-    },
-    'browser-js' : {
-        sourceSuffixes : ['js', 'vanilla.js', 'browser.js'],
-        target : '?.browser.js',
-        borschik : {
-            target : '?.browser.min.js',
-            tech : 'js',
-        },
-    },
-    css : {
-        sourceSuffixes : ['styl', 'css', 'post.css'],
-        target : '?.css',
-        borschik : {
-            target : '?.min.css',
-            tech : 'cleancss',
         },
     },
 };
@@ -84,11 +84,11 @@ module.exports = class {
     _getTechs(levels) {
         return [].concat(
             this._getFilesTechs(levels),
-            this._getBemtreeTechs(),
-            this._getServerBemhtmlTechs(),
-            this._getBrowserBemhtmlTechs(),
             this._getCssTechs(),
             this._getBrowserJsTechs(),
+            this._getBrowserBemhtmlTechs(),
+            this._getBemtreeTechs(),
+            this._getServerBemhtmlTechs(),
             this._getOptimizationTechs()
         );
     }
@@ -200,7 +200,6 @@ module.exports = class {
                 [enbBemhtml, {
                     target : '?.browser.bemhtml.js',
                     filesTarget : '?.bemhtml.files',
-                    devMode : (process.env.BEMHTML_ENV === 'development'),
                 }],
             ];
         }
@@ -292,10 +291,10 @@ module.exports = class {
                 const tech = FINAL_TECHS[key];
 
                 if (tech.borschik) {
-                    const item = Object.assign({}, tech.borschik, {
+                    const item = Object.assign({
                         source : tech.target,
                         minify : this._isMinify,
-                    });
+                    }, tech.borschik);
 
                     result.push([enbBorschik, item]);
                 }

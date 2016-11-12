@@ -5,7 +5,7 @@
 export NODE_ENV ?= development
 
 # Project name
-#PROJECT_NAME = unknown
+PROJECT_NAME ?= unknown
 
 # Node path
 NODE_BIN_PATH := /usr/bin /usr/local/bin
@@ -45,6 +45,9 @@ STATIC_PATH := $(ROOT_PATH)/public/static
 
 # Enb
 ENB := $(NODE_MODULES_BIN_PATH)/enb
+
+# Borschik
+BORSCHIK := $(NODE_MODULES_BIN_PATH)/borschik
 
 # Process manager
 PROCESS_MANAGER := pm2
@@ -104,7 +107,6 @@ restart:
 # Make bem tech(s)
 .PHONY: bem
 bem: bem-configs.create
-	@echo '===> Make bem tech(s)'
 	$(ENB) make ${tech} --no-cache --dir $(BEM_PATH)
 
 # Clean bem techs
@@ -114,14 +116,19 @@ bem-techs.clean:
 	$(ENB) make clean --dir $(BEM_PATH)
 
 # Create bem configs
+.PHONY: bem-configs.create
 bem-configs.create:
 	@echo '===> Creating bem configs'
 	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/borschik.json $(BEM_PATH)/.borschik
+	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/links.json $(BEM_PATH)/links.tmp.json
+    $(BORSCHIK) -t json -i $(BEM_PATH)/links.tmp.json -o $(BEM_PATH)/links.json
+    rm $(BEM_PATH)/links.tmp.json
 
 .PHONY: bem-configs.delete
 bem-configs.delete:
 	@echo '===> Deleting bem configs'
 	rm -f $(BEM_PATH)/.borschik
+	rm -f $(BEM_PATH)/links.json
 
 ### Structure
 ### ---------
