@@ -121,8 +121,8 @@ bem-configs.create:
 	@echo '===> Creating bem configs'
 	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/borschik.json $(BEM_PATH)/.borschik
 	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/links.json $(BEM_PATH)/links.tmp.json
-    $(BORSCHIK) -t json -i $(BEM_PATH)/links.tmp.json -o $(BEM_PATH)/links.json
-    rm $(BEM_PATH)/links.tmp.json
+	$(BORSCHIK) -t json -i $(BEM_PATH)/links.tmp.json -o $(BEM_PATH)/links.json
+	rm $(BEM_PATH)/links.tmp.json
 
 .PHONY: bem-configs.delete
 bem-configs.delete:
