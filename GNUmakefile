@@ -155,6 +155,48 @@ temp-files.delete:
 	@echo '===> Deleting temporary files'
 	rm -rf $(BEM_PATH)/.enb/tmp
 
+### BUILD
+### =====
+
+# Build
+BUILD_DIR := build
+
+.PHONY: build
+build: build.files build.dump
+
+.PHONY: build.files
+build.files: bem
+	@echo '===> Coping build files'
+	make bem
+	make bem tech=bemtree
+
+	rm -rf $(BUILD_DIR)
+	mkdir $(BUILD_DIR)
+
+	mkdir -p $(BUILD_DIR)/bem/bundles/index
+	cp bem/bundles/index/index.bemtree.min.js $(BUILD_DIR)/bem/bundles/index
+	cp bem/bundles/index/index.bemhtml.min.js $(BUILD_DIR)/bem/bundles/index
+
+	mkdir -p $(BUILD_DIR)/configs/app
+	cp configs/app/default.js $(BUILD_DIR)/configs/app
+	cp configs/app/default-0.js $(BUILD_DIR)/configs/app
+	cp configs/app/production.js $(BUILD_DIR)/configs/app
+	cp configs/app/production-0.js $(BUILD_DIR)/configs/app
+
+	cp index.js $(BUILD_DIR)
+	cp bower.json $(BUILD_DIR)
+	cp .bowerrc $(BUILD_DIR)
+	cp package.json $(BUILD_DIR)
+
+	cp -r routes $(BUILD_DIR)
+	cp -r src $(BUILD_DIR)
+	cp -r public $(BUILD_DIR)
+
+.PHONY: build.dump
+build.dump:
+	@echo '===> Dumping database'
+	mongodump -h 127.0.0.1 -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
+
 ### DEBUG
 ### =====
 
