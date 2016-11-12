@@ -108,9 +108,6 @@ build: build.files build.dump
 .PHONY: build.files
 build.files: bem
 	@echo '===> Coping build files'
-	make bem
-	make bem tech=bemtree
-
 	rm -rf $(BUILD_DIR)
 	mkdir $(BUILD_DIR)
 
@@ -123,6 +120,10 @@ build.files: bem
 	cp configs/app/default-0.js $(BUILD_DIR)/configs/app
 	cp configs/app/production.js $(BUILD_DIR)/configs/app
 	cp configs/app/production-0.js $(BUILD_DIR)/configs/app
+
+	mkdir $(BUILD_DIR)/makefiles
+	find makefiles -type f -d 1 -exec cp {} $(BUILD_DIR)/makefiles \;
+	cp makefiles/env/production $(BUILD_DIR)/GNUmakefile # TODO: production
 
 	cp index.js $(BUILD_DIR)
 	cp bower.json $(BUILD_DIR)
