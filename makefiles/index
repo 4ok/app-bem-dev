@@ -39,7 +39,7 @@ $(info $(LINE_BREAK))
 
 # Make bem techs
 .PHONY: bem
-bem: bem-configs.create bem-make freeze-links
+bem: static-dir.delete bem-configs.create bem-make freeze-links
 
 # Bem make
 .PHONY: bem-make
@@ -125,6 +125,8 @@ build.files: bem
 	find makefiles -type f -d 1 -exec cp {} $(BUILD_DIR)/makefiles \;
 	cp makefiles/env/production $(BUILD_DIR)/GNUmakefile # TODO: production
 
+	cp $(BEM_PATH)/links.json $(BUILD_DIR)/bem/links.json
+
 	cp index.js $(BUILD_DIR)
 	cp bower.json $(BUILD_DIR)
 	cp .bowerrc $(BUILD_DIR)
@@ -134,7 +136,16 @@ build.files: bem
 	cp -r src $(BUILD_DIR)
 	cp -r public $(BUILD_DIR)
 
+	find $(BUILD_DIR)/public | grep -E '\.(css|js|eot|svg|ttf|woff|pdf|xml|txt)' | xargs gzip -kv9
+
 .PHONY: build.dump
 build.dump:
 	@echo '===> Dumping database'
 	mongodump -h 127.0.0.1 -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
+
+.PHONY: deploy.files
+deploy.files:
+	@echo '===> Deploying build files'
+	tar --disable-copyfile -zcf build.tar.gz ./build
+	scp build.tar.gz fast-vps:/var/www/projects/${PROJECT_NAME}-release.tar.gz
+	ssh fast-vps "cd /var/www/projects/ && tar -zxf ${PROJECT_NAME}-release.tar && cd ${PROJECT_NAME}-release && npm i && bower install --allow-root"
