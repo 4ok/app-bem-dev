@@ -106,6 +106,7 @@ BUILD_DIR := build
 build: build.files build.dump
 
 .PHONY: build.files
+build.files: NODE_ENV=production
 build.files: bem
 	@echo '===> Coping build files'
 	rm -rf $(BUILD_DIR)
