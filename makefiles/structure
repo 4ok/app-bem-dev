@@ -1,0 +1,38 @@
+### SETTINGS
+### ========
+
+# Static path
+STATIC_PATH := $(ROOT_PATH)/public/static
+
+# Print break line
+$(info $(LINE_BREAK))
+
+### RULES
+### =====
+
+# Create static dir
+static-dir.create:
+	@echo '===> Сreating static dir'
+
+	mkdir -p $(STATIC_PATH)
+
+# Clean
+.PHONY: clean
+clean: bem-configs.delete static-dir.delete bem-techs.clean temp-files.delete
+
+# Delete static dir
+.PHONY: static-dir.delete
+static-dir.delete:
+	@echo '===> Deleting static dir'
+
+	rm -rf $(STATIC_PATH)
+
+
+# Delete temporary files
+.PHONY: temp-files.delete
+temp-files.delete:
+	@echo '===> Deleting temporary files'
+
+	rm -rf $(BEM_PATH)/.enb/tmp
+
+

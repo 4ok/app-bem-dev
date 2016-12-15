@@ -1,0 +1,38 @@
+# Make bem techs
+.PHONY: bem
+bem: static-dir.delete bem-configs.create bem-make freeze-links
+
+# Bem make
+.PHONY: bem-make
+bem-make:
+	$(ENB) make ${tech} --no-cache --dir $(BEM_PATH)
+
+# Create bem configs
+.PHONY: bem-configs.create
+bem-configs.create:
+	@echo '===> Creating bem configs'
+
+	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/borschik.json $(BEM_PATH)/.borschik
+
+# Freeze links
+.PHONY: freeze-links
+freeze-links:
+	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/links.json $(BEM_PATH)/links.tmp.json
+	$(BORSCHIK) -t json -i $(BEM_PATH)/links.tmp.json -o $(BEM_PATH)/links.json
+	rm $(BEM_PATH)/links.tmp.json
+
+# Clean bem techs
+.PHONY: bem-techs.clean
+bem-techs.clean:
+	@echo '===> Cleaning bem bundles'
+
+	$(ENB) make clean --dir $(BEM_PATH)
+
+.PHONY: bem-configs.delete
+bem-configs.delete:
+	@echo '===> Deleting bem configs'
+
+	rm -f $(BEM_PATH)/.borschik
+	rm -f $(BEM_PATH)/links.json
+
+

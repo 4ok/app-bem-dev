@@ -1,0 +1,98 @@
+### SETTINGS
+### ========
+
+# Build directory
+BUILD_DIR := build
+
+# Public directory
+PUBLIC_DIR := public
+
+### RULES
+### =====
+
+.PHONY: build
+build: export NODE_ENV=production
+build: build.copy build.gzip-public build.dump
+
+.PHONY: build.copy
+build.copy: build.copy.bem build.copy.app build.copy.makefile build.copy.install-files \
+            build.copy.public-optimize-images build.copy.public-files
+
+.PHONY: build.copy.bem
+build.copy.bem: bem
+	@echo '===> Coping bem files'
+
+	rm -rf $(BUILD_DIR)
+	mkdir $(BUILD_DIR)
+
+	mkdir -p $(BUILD_DIR)/bem/bundles/index
+	cp bem/bundles/index/index.bemtree.min.js $(BUILD_DIR)/bem/bundles/index
+	cp bem/bundles/index/index.bemhtml.min.js $(BUILD_DIR)/bem/bundles/index
+
+	cp $(BEM_PATH)/links.json $(BUILD_DIR)/bem/links.json
+
+.PHONY: build.copy.app
+build.copy.app:
+	@echo '===> Coping application files'
+
+	cp index.js $(BUILD_DIR)
+
+	cp -r routes $(BUILD_DIR)
+	cp -r src $(BUILD_DIR)
+
+	mkdir -p $(BUILD_DIR)/configs/app
+	cp configs/app/default.js $(BUILD_DIR)/configs/app
+	cp configs/app/default-0.js $(BUILD_DIR)/configs/app
+	cp configs/app/production.js $(BUILD_DIR)/configs/app
+	cp configs/app/production-0.js $(BUILD_DIR)/configs/app
+
+.PHONY: build.copy.makefile
+build.copy.makefile:
+	@echo '===> Coping makefile'
+
+	mkdir $(BUILD_DIR)/makefiles
+	find makefiles -type f -d 1 -exec cp {} $(BUILD_DIR)/makefiles \;
+	cp makefiles/env/$(NODE_ENV) $(BUILD_DIR)/GNUmakefile
+
+.PHONY: build.copy.install-files
+build.copy.install-files:
+	@echo '===> Coping install files'
+
+	cp bower.json $(BUILD_DIR)
+	cp .bowerrc $(BUILD_DIR)
+	cp package.json $(BUILD_DIR)
+
+.PHONY: build.copy.public-optimize-images
+build.copy.public-optimize-images:
+	@echo '===> Optimizing and coping public images'
+
+	find $(PUBLIC_DIR) -type d -exec $(NODE_MODULES_BIN_PATH)/imagemin {}/*.{jpg,jpeg,png,gif,svg} -p mozjpeg -p pngquant -p gifsicle -p svgo -o $(BUILD_DIR)/{} \;
+
+.PHONY: build.copy.public-files
+build.copy.public-files:
+	@echo '===> Coping not images files'
+
+	find $(PUBLIC_DIR) -type f ! -name '.*' | grep -Ev '/.+\.(jpg|jpeg|png|gif|svg)$$' | xargs -I {} rsync -R {} $(BUILD_DIR)/
+
+.PHONY: build.gzip-public
+build.gzip-public:
+	@echo '===> Gziping public files'
+
+	find $(BUILD_DIR)/public | grep -E '\.(css|js|eot|svg|ttf|woff|pdf|xml|txt)' | xargs gzip -kv9
+
+.PHONY: build.dump
+build.dump:
+	@echo '===> Dumping database'
+
+	mongodump -h 127.0.0.1 -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
+
+.PHONY: deploy
+deploy: deploy.copy
+
+.PHONY: deploy.copy
+deploy.copy:
+	@echo '===> Deploying build files'
+
+	tar --disable-copyfile -zcf build.tar.gz ./build
+	scp build.tar.gz fast-vps:/var/www/projects/${PROJECT_NAME}-release.tar.gz
+	ssh fast-vps "cd /var/www/projects/ && tar -zxf ${PROJECT_NAME}-release.tar.gz && cd build && npm i && bower install --allow-root"
