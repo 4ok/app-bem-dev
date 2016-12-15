@@ -1,9 +1,3 @@
-### SETTINGS
-### ========
-
-# Project name
-PROJECT_NAME ?= unknown
-
 # Node path
 NODE_BIN_PATH := /usr/bin /usr/local/bin
 
@@ -12,6 +6,8 @@ LINE_BREAK := $(shell printf '*%.0s' {1..90})
 
 # Project root path
 ROOT_PATH := $(PWD)
+
+# todo:merge vars
 
 # Node modules path
 NODE_MODULES_PATH := $(ROOT_PATH)/node_modules
@@ -30,123 +26,3 @@ ENB := $(NODE_MODULES_BIN_PATH)/enb
 
 # Borschik
 BORSCHIK := $(NODE_MODULES_BIN_PATH)/borschik
-
-# Print break line
-$(info $(LINE_BREAK))
-
-### BEM
-### ===
-
-# Make bem techs
-.PHONY: bem
-bem: static-dir.delete bem-configs.create bem-make freeze-links
-
-# Bem make
-.PHONY: bem-make
-bem-make:
-	$(ENB) make ${tech} --no-cache --dir $(BEM_PATH)
-
-# Create bem configs
-.PHONY: bem-configs.create
-bem-configs.create:
-	@echo '===> Creating bem configs'
-	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/borschik.json $(BEM_PATH)/.borschik
-
-# Freeze links
-.PHONY: freeze-links
-freeze-links:
-	ln -sf $(NODE_MODULES_PATH)/app-bem-dev/links.json $(BEM_PATH)/links.tmp.json
-	$(BORSCHIK) -t json -i $(BEM_PATH)/links.tmp.json -o $(BEM_PATH)/links.json
-	rm $(BEM_PATH)/links.tmp.json
-
-# Clean bem techs
-.PHONY: bem-techs.clean
-bem-techs.clean:
-	@echo '===> Cleaning bem bundles'
-	$(ENB) make clean --dir $(BEM_PATH)
-
-.PHONY: bem-configs.delete
-bem-configs.delete:
-	@echo '===> Deleting bem configs'
-	rm -f $(BEM_PATH)/.borschik
-	rm -f $(BEM_PATH)/links.json
-
-### Structure
-### =========
-
-# Create static dir
-static-dir.create:
-	@echo '===> Сreating static dir'
-	mkdir -p $(STATIC_PATH)
-
-# Clean
-.PHONY: clean
-clean: bem-configs.delete static-dir.delete bem-techs.clean temp-files.delete
-
-# Delete static dir
-.PHONY: static-dir.delete
-static-dir.delete:
-	@echo '===> Deleting static dir'
-	rm -rf $(STATIC_PATH)
-
-
-# Delete temporary files
-.PHONY: temp-files.delete
-temp-files.delete:
-	@echo '===> Deleting temporary files'
-	rm -rf $(BEM_PATH)/.enb/tmp
-
-### BUILD
-### =====
-
-# Build
-BUILD_DIR := build
-
-.PHONY: build
-build: build.files build.dump
-
-.PHONY: build.files
-build.files: NODE_ENV=production
-build.files: bem
-	@echo '===> Coping build files'
-	rm -rf $(BUILD_DIR)
-	mkdir $(BUILD_DIR)
-
-	mkdir -p $(BUILD_DIR)/bem/bundles/index
-	cp bem/bundles/index/index.bemtree.min.js $(BUILD_DIR)/bem/bundles/index
-	cp bem/bundles/index/index.bemhtml.min.js $(BUILD_DIR)/bem/bundles/index
-
-	mkdir -p $(BUILD_DIR)/configs/app
-	cp configs/app/default.js $(BUILD_DIR)/configs/app
-	cp configs/app/default-0.js $(BUILD_DIR)/configs/app
-	cp configs/app/production.js $(BUILD_DIR)/configs/app
-	cp configs/app/production-0.js $(BUILD_DIR)/configs/app
-
-	mkdir $(BUILD_DIR)/makefiles
-	find makefiles -type f -d 1 -exec cp {} $(BUILD_DIR)/makefiles \;
-	cp makefiles/env/production $(BUILD_DIR)/GNUmakefile # TODO: production
-
-	cp $(BEM_PATH)/links.json $(BUILD_DIR)/bem/links.json
-
-	cp index.js $(BUILD_DIR)
-	cp bower.json $(BUILD_DIR)
-	cp .bowerrc $(BUILD_DIR)
-	cp package.json $(BUILD_DIR)
-
-	cp -r routes $(BUILD_DIR)
-	cp -r src $(BUILD_DIR)
-	cp -r public $(BUILD_DIR)
-
-	find $(BUILD_DIR)/public | grep -E '\.(css|js|eot|svg|ttf|woff|pdf|xml|txt)' | xargs gzip -kv9
-
-.PHONY: build.dump
-build.dump:
-	@echo '===> Dumping database'
-	mongodump -h 127.0.0.1 -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
-
-.PHONY: deploy.files
-deploy.files:
-	@echo '===> Deploying build files'
-	tar --disable-copyfile -zcf build.tar.gz ./build
-	scp build.tar.gz fast-vps:/var/www/projects/${PROJECT_NAME}-release.tar.gz
-	ssh fast-vps "cd /var/www/projects/ && tar -zxf ${PROJECT_NAME}-release.tar && cd ${PROJECT_NAME}-release && npm i && bower install --allow-root"
