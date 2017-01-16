@@ -1,14 +1,57 @@
-### SETTINGS
-### ========
+##### SETTINGS #####
+
+# Gzip compress level
+export GZIP=-9
+
+# Mongo gost
+MONGO_HOST = 127.0.0.1
 
 # Build directory
-BUILD_DIR := build
+BUILD_DIR := ./build
 
 # Public directory
-PUBLIC_DIR := public
+PUBLIC_DIR := ./public
 
-### RULES
-### =====
+# Build file
+BUILD_FILE = ./build.tar.gz
+
+# Files suffixes for compress
+COMPRESS_SUFFIXES = css|js|eot|svg|ttf|woff|pdf|xml|txt
+
+# Images suffixes for optimize
+OPTIMIZE_IMAGES = jpg,jpeg,png,gif,svg
+
+# Remote build name
+REMOTE_BUILD_NAME = $(PROJECT_NAME)-$(shell date +%s)
+
+# Remote build file name
+REMOTE_BUILD_FILENAME = $(REMOTE_BUILD_NAME).tar.gz
+
+# Remote www root
+REMOTE_WWW_ROOT := /var/www
+
+# Remote builds dir
+REMOTE_BUILDS_DIR = $(REMOTE_WWW_ROOT)/builds
+
+# Remote projects dir
+REMOTE_PROJECTS_DIR = $(REMOTE_WWW_ROOT)/projects
+
+# Remote backups dir
+REMOTE_BACKUPS_DIR = $(REMOTE_WWW_ROOT)/backups
+
+# Remote build file
+REMOTE_BUILD_FILE = $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_FILENAME)
+
+# Remote build dir
+REMOTE_BUILD_DIR = $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_NAME)
+
+# Remote project dir
+REMOTE_PROJECT_DIR = $(REMOTE_PROJECTS_DIR)/$(PROJECT_NAME)
+
+# Remote backup file
+REMOTE_BACKUP_FILE = $(REMOTE_BACKUPS_DIR)/$(REMOTE_BUILD_NAME)
+
+##### RULES #####
 
 .PHONY: build
 build: export NODE_ENV=production
@@ -52,7 +95,7 @@ build.copy.makefile:
 
 	mkdir $(BUILD_DIR)/makefiles
 	find makefiles -type f -d 1 -exec cp {} $(BUILD_DIR)/makefiles \;
-	cp makefiles/env/$(NODE_ENV) $(BUILD_DIR)/GNUmakefile
+	cp makefiles/env/$(NODE_ENV) $(BUILD_DIR)/Makefile
 
 .PHONY: build.copy.install-files
 build.copy.install-files:
@@ -66,25 +109,32 @@ build.copy.install-files:
 build.copy.public-optimize-images:
 	@echo '===> Optimizing and coping public images'
 
-	find $(PUBLIC_DIR) -type d -exec $(NODE_MODULES_BIN_PATH)/imagemin {}/*.{jpg,jpeg,png,gif,svg} -p mozjpeg -p pngquant -p gifsicle -p svgo -o $(BUILD_DIR)/{} \;
+	find $(PUBLIC_DIR) -type d \
+	    -exec $(NODE_MODULES_BIN_PATH)/imagemin {}/*.{$(OPTIMIZE_IMAGES)} \
+	    -p mozjpeg -p pngquant -p gifsicle -p svgo \
+	    -o $(BUILD_DIR)/{} \;
 
 .PHONY: build.copy.public-files
 build.copy.public-files:
 	@echo '===> Coping not images files'
 
-	find $(PUBLIC_DIR) -type f ! -name '.*' | grep -Ev '/.+\.(jpg|jpeg|png|gif|svg)$$' | xargs -I {} rsync -R {} $(BUILD_DIR)/
+	find $(PUBLIC_DIR) -type f ! -name '.*' \
+	    | grep -Ev '/.+\.(jpg|jpeg|png|gif|svg)$$' \
+	    | xargs -I {} rsync -R {} $(BUILD_DIR)/
 
 .PHONY: build.gzip-public
 build.gzip-public:
 	@echo '===> Gziping public files'
 
-	find $(BUILD_DIR)/public | grep -E '\.(css|js|eot|svg|ttf|woff|pdf|xml|txt)' | xargs gzip -kv9
+	find $(BUILD_DIR)/public \
+	    | grep -E '\.($(COMPRESS_SUFFIXES))' \
+	    | xargs gzip -kv9
 
 .PHONY: build.dump
 build.dump:
 	@echo '===> Dumping database'
 
-	mongodump -h 127.0.0.1 -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
+	mongodump -h $(MONGO_HOST) -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
 
 .PHONY: deploy
 deploy: deploy.copy
@@ -93,6 +143,19 @@ deploy: deploy.copy
 deploy.copy:
 	@echo '===> Deploying build files'
 
-	tar --disable-copyfile -zcf build.tar.gz ./build
-	scp build.tar.gz fast-vps:/var/www/projects/${PROJECT_NAME}-release.tar.gz
-	ssh fast-vps "cd /var/www/projects/ && tar -zxf ${PROJECT_NAME}-release.tar.gz && cd build && npm i && bower install --allow-root"
+	tar -zcf $(BUILD_FILE) $(BUILD_DIR)
+	scp $(BUILD_FILE) fast-vps:$(REMOTE_BUILD_FILE)
+
+	ssh fast-vps ' \
+	    mkdir $(REMOTE_BUILD_DIR) \
+        && tar -C $(REMOTE_BUILD_DIR) --strip-components 1 \
+            -zxf $(REMOTE_BUILD_FILE) 2>/dev/null \
+        && cd $(REMOTE_BUILD_DIR)/build \
+        && npm install \
+        && bower install --allow-root \
+        && if [ -d $(REMOTE_PROJECT_DIR) ]; then \
+            mv $(REMOTE_PROJECT_DIR) $(REMOTE_BACKUP_FILE) \
+            && rm -rf $(REMOTE_PROJECT_DIR); \
+        fi \
+        && mv $(REMOTE_BUILD_DIR)/build $(REMOTE_PROJECT_DIR) \
+	    '
