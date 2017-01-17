@@ -1,0 +1,11 @@
+# Line separator
+LINE_BREAK := $(shell printf '*%.0s' {1..90})
+
+# Node path
+NODE_BIN_PATH ?= /usr/bin /usr/local/bin
+
+# Node modules path
+NODE_MODULES_PATH ?= node_modules
+
+# Node modules bin path
+NODE_MODULES_BIN_PATH ?= $(NODE_MODULES_PATH)/.bin
