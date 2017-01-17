@@ -63,12 +63,12 @@ module.exports = class {
         this._config = config;
     }
 
-    init(nodes, levels, env) {
-        const isDev = (!env || env === 'development');
+    init(nodes, levels, isMinify) {
+        isMinify = Boolean(isMinify);
 
         this._nodes = nodes;
-        this._isMinify = !isDev;
-        this._isSourcemap = !isDev;
+        this._isMinify = isMinify;
+        this._isSourcemap = !isMinify;
 
         this._addTechsAndTargets(levels);
         this._addTasks();
