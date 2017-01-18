@@ -1,5 +1,5 @@
 #
-# Targets:
+# Actions:
 #
 #    bem    Assemble bem bundles
 #    clean  Clean assembled files
@@ -59,7 +59,7 @@ bem-make:
 # Create bem configs
 .PHONY: bem-configs.create
 bem-configs.create:
-	$(call infoTitle,Creating bem configs)
+	$(call printActionTitle,Creating bem configs)
 
 	ln -sf $(PWD)/$(NODE_MODULES_DIR)/app-bem-dev/borschik.json $(PWD)/$(BEM_DIR)/.borschik
 
@@ -73,7 +73,7 @@ freeze-links:
 # Create the static directory
 .PHONY: static-dir.create
 static-dir.create:
-	$(call infoTitle,Сreating static dir)
+	$(call printActionTitle,Сreating static dir)
 
 	mkdir -p $(STATIC_DIR)
 
@@ -88,14 +88,14 @@ clean: bem-configs.delete static-dir.delete bundles.delete temp-files.delete
 # Delete bundles
 .PHONY: bundles.delete
 bundles.delete:
-	$(call infoTitle,Cleaning bem bundles)
+	$(call printActionTitle,Cleaning bem bundles)
 
 	$(ENB) make clean --dir $(BEM_DIR)
 
 # Delete bem configs
 .PHONY: bem-configs.delete
 bem-configs.delete:
-	$(call infoTitle,Deleting bem configs)
+	$(call printActionTitle,Deleting bem configs)
 
 	rm -f $(BEM_DIR)/.borschik
 	rm -f $(BEM_DIR)/links.json
@@ -103,14 +103,14 @@ bem-configs.delete:
 # Delete the static directory
 .PHONY: static-dir.delete
 static-dir.delete:
-	$(call infoTitle,Deleting the static dir)
+	$(call printActionTitle,Deleting the static dir)
 
 	rm -rf $(STATIC_DIR)
 
 # Delete temporary files
 .PHONY: temp-files.delete
 temp-files.delete:
-	$(call infoTitle,Deleting temporary files)
+	$(call printActionTitle,Deleting temporary files)
 
 	rm -rf $(BEM_PATH)/.enb/tmp
 
