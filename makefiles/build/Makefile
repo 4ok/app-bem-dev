@@ -1,4 +1,12 @@
-### Variables ###
+#
+# Actions:
+#
+#    build      Build application
+#
+
+########################################################
+###                     Variables                    ###
+########################################################
 
 # Space char
 SPACE = $() $()
@@ -6,8 +14,16 @@ SPACE = $() $()
 # Mongo gost
 MONGO_HOST ?= 127.0.0.1
 
+# Node modules directory
+NODE_MODULES_DIR ?= node_modules
+
+# Node modules binary directory
+NODE_MODULES_BIN_DIR ?= $(NODE_MODULES_DIR)/.bin
+
+IMAGEMIN ?= $(NODE_MODULES_BIN_DIR)/imagemin
+
 # Bem dir
-BEM_DIR ?= bem # todo
+BEM_DIR ?= bem
 
 # Configs dir
 CONFIGS_DIR ?= configs
@@ -33,39 +49,6 @@ PUBLIC_DIR ?= public
 # Build directory
 BUILD_DIR ?= build
 
-# Build file
-BUILD_FILE ?= build.tar.gz
-
-# Remote www root
-REMOTE_WWW_ROOT ?= /var/www
-
-# Remote builds dir
-REMOTE_BUILDS_DIR ?= $(REMOTE_WWW_ROOT)/builds
-
-# Remote projects dir
-REMOTE_PROJECTS_DIR ?= $(REMOTE_WWW_ROOT)/projects
-
-# Remote backups dir
-REMOTE_BACKUPS_DIR ?= $(REMOTE_WWW_ROOT)/backups
-
-# Remote build name
-REMOTE_BUILD_NAME ?= $(PROJECT_NAME)-$(shell date +%s)
-
-# Remote build file name
-REMOTE_BUILD_FILE ?= $(REMOTE_BUILD_NAME).tar.gz
-
-# Remote build file
-REMOTE_BUILD_FILE ?= $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_FILE)
-
-# Remote build dir
-REMOTE_BUILD_DIR ?= $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_NAME)
-
-# Remote project dir
-REMOTE_BUILD_PROJECT_DIR ?= $(REMOTE_PROJECTS_DIR)/$(PROJECT_NAME)
-
-# Remote backup file
-REMOTE_BUILD_BACKUP_FILE ?= $(REMOTE_BACKUPS_DIR)/$(REMOTE_BUILD_FILE)
-
 # Files suffixes for compress
 COMPRESS_SUFFIXES ?= css|js|eot|svg|ttf|woff|pdf|xml|txt
 
@@ -81,6 +64,10 @@ OPTIMIZE_IMAGES_SUFFIXES_SEP_VERT_BAR ?= $(subst $(SPACE),|,$(OPTIMIZE_IMAGES_SU
 # Images suffixes for optimize
 OPTIMIZE_IMAGES ?= jpg jpeg png gif svg
 
+########################################################
+###                      Export                      ###
+########################################################
+
 # Gzip compress level
 export GZIP ?= -9
 
@@ -90,7 +77,25 @@ export ENB_IS_MINIFY ?= 1
 # Build environment
 export BUILD_ENV ?= production
 
-### Rules ###
+########################################################
+###                     Functions                    ###
+########################################################
+
+#
+# Print the title of action
+#
+# $(1) {String} Title
+#
+ifndef printActionTitle
+define printActionTitle
+    $(info )
+    $(info =====> $(1))
+endef
+endif
+
+########################################################
+###                     Copy rules                   ###
+########################################################
 
 .PHONY: build
 build: build.copy build.gzip-public build.dump
@@ -101,8 +106,8 @@ build.copy: build.copy.bem build.copy.app \
             build.copy.public-optimize-images build.copy.public-files
 
 .PHONY: build.copy.bem
-build.copy.bem: bem
-	@echo '===> Coping bem files'
+build.copy.bem:
+	$(call printActionTitle,Coping bem files)
 
 	rm -rf $(BUILD_DIR)
 	mkdir $(BUILD_DIR)
@@ -115,7 +120,7 @@ build.copy.bem: bem
 
 .PHONY: build.copy.app
 build.copy.app:
-	@echo '===> Coping application files'
+	$(call printActionTitle,Coping application files)
 
 	cp index.js $(BUILD_DIR)
 
@@ -128,7 +133,7 @@ build.copy.app:
 
 .PHONY: build.copy.makefile
 build.copy.makefile:
-	@echo '===> Coping makefile'
+	$(call printActionTitle,Coping makefile)
 
 	mkdir $(BUILD_DIR)/makefiles
 	find makefiles -type f -d 1 -exec cp {} $(BUILD_DIR)/makefiles \;
@@ -136,66 +141,50 @@ build.copy.makefile:
 
 .PHONY: build.copy.install-files
 build.copy.install-files:
-	@echo '===> Coping install files'
+	$(call printActionTitle,Coping install files')
 
 	cp bower.json $(BUILD_DIR)
 	cp .bowerrc $(BUILD_DIR)
 	cp package.json $(BUILD_DIR)
 
-.PHONY: build.copy.public-optimize-images
-build.copy.public-optimize-images:
-	@echo '===> Optimizing and coping public images'
-
-	find $(PUBLIC_DIR) -type d \
-	    -exec $(NODE_MODULES_BIN_PATH)/imagemin {}/*.{$(OPTIMIZE_IMAGES_SUFFIXES_SEP_COMMA)} \
-	    -p mozjpeg -p pngquant -p gifsicle -p svgo \
-	    -o $(BUILD_DIR)/{} \;
-
 .PHONY: build.copy.public-files
 build.copy.public-files:
-	@echo '===> Coping not images files'
+	$(call printActionTitle,Coping not images files)
 
 	find $(PUBLIC_DIR) -type f ! -name '.*' \
 	    | grep -Ev '/.+\.($(OPTIMIZE_IMAGES_SUFFIXES_SEP_VERT_BAR))$$' \
 	    | xargs -I {} rsync -R {} $(BUILD_DIR)/
 
+########################################################
+###                   Minify rules                   ###
+########################################################
+
+.PHONY: build.copy.public-optimize-images
+build.copy.public-optimize-images:
+	$(call printActionTitle,Optimizing and coping public images)
+
+	find $(PUBLIC_DIR) -type d \
+	    -exec $(IMAGEMIN) {}/*.{$(OPTIMIZE_IMAGES_SUFFIXES_SEP_COMMA)} \
+	    --plugin mozjpeg \
+	    --plugin pngquant \
+	    --plugin gifsicle \
+	    --plugin svgo \
+	    -o $(BUILD_DIR)/{} \;
+
 .PHONY: build.gzip-public
 build.gzip-public:
-	@echo '===> Gziping public files'
+	$(call printActionTitle,Gziping public files)
 
 	find $(BUILD_DIR)/public \
 	    | grep -E '\.($(COMPRESS_SUFFIXES))' \
 	    | xargs gzip -kv9
 
+########################################################
+###                    Dump rules                    ###
+########################################################
+
 .PHONY: build.dump
 build.dump:
-	@echo '===> Dumping database'
+	$(call printActionTitle,Dumping database)
 
 	mongodump -h $(MONGO_HOST) -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
-
-.PHONY: deploy restart
-deploy: deploy.copy
-
-.PHONY: deploy.copy
-deploy.copy:
-	@echo '===> Deploying build files'
-
-	tar -zcf $(BUILD_FILE) $(BUILD_DIR)
-	scp $(BUILD_FILE) fast-vps:$(REMOTE_BUILD_FILE)
-
-	ssh fast-vps ' \
-	    mkdir $(REMOTE_BUILD_DIR) \
-        && tar -C $(REMOTE_BUILD_DIR) --strip-components 1 \
-            -zxf $(REMOTE_BUILD_FILE) 2>/dev/null \
-        && cd $(REMOTE_BUILD_DIR)/build \
-        && npm install \
-        && bower install --allow-root \
-        && if [ -d $(REMOTE_BUILD_PROJECT_DIR) ]; then \
-            tar -zcf $(REMOTE_BUILD_BACKUP_FILE) $(REMOTE_BUILD_PROJECT_DIR) \
-            && rm -rf $(REMOTE_BUILD_PROJECT_DIR); \
-        fi \
-        && mv $(REMOTE_BUILD_DIR)/build $(REMOTE_BUILD_PROJECT_DIR) \
-        && rm -rf $(REMOTE_BUILD_DIR) \
-        && rm -rf $(REMOTE_BUILD_FILE) \
-        && make start \
-	    '
