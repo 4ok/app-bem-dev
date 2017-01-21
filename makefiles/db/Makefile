@@ -8,12 +8,12 @@
 ###                     Variables                    ###
 ########################################################
 
-ifndef SERVER_IP
-    $(error Variable SERVER_IP isn't defined)
+ifndef SERVER_HOST
+    $(error Variable SERVER_HOST isn't defined)
 endif
 
 # Project name
-PROJECT_NAME ?= $(shell basename $(CURDIR))
+PROJECT_NAME ?= $(shell jq -r '.name' package.json)
 
 # Mongo host
 LOCAL_MONGO_HOST ?= 127.0.0.1
@@ -111,7 +111,7 @@ db.local.copy-dump-to-remote-tmp-dir:
 db.remote.restore-from-tmp-dump:
 	$(call printActionTitle,Restoring from a temporary dump)
 
-	ssh $(SERVER_IP) ' \
+	ssh $(SERVER_HOST) ' \
         mongorestore \
             --host=$(REMOTE_MONGO_HOST) \
             --archive=$(REMOTE_TMP_DUMP_ARCHIVE) \
@@ -123,7 +123,7 @@ db.remote.restore-from-tmp-dump:
 db.remote.dump:
 	$(call printActionTitle,Dumping a remote database)
 
-	ssh $(SERVER_IP) ' \
+	ssh $(SERVER_HOST) ' \
         mongodump \
             --host=$(REMOTE_MONGO_HOST) \
             --db=$(REMOTE_DB_NAME) \
@@ -136,4 +136,4 @@ db.remote.dump:
 db.remote.remove-tmp-dump:
 	$(call printActionTitle,Removing a temporary dump)
 
-	ssh $(SERVER_IP) 'rm $(REMOTE_TMP_DUMP_ARCHIVE)'
+	ssh $(SERVER_HOST) 'rm $(REMOTE_TMP_DUMP_ARCHIVE)'

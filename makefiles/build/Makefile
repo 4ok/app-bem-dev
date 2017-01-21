@@ -9,7 +9,7 @@
 ########################################################
 
 # Project name
-PROJECT_NAME ?= $(shell basename $(CURDIR))
+PROJECT_NAME ?= $(shell jq -r '.name' package.json)
 
 # Node modules directory
 NODE_MODULES_DIR ?= node_modules
