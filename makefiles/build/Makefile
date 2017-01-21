@@ -8,11 +8,8 @@
 ###                     Variables                    ###
 ########################################################
 
-# Space char
-SPACE = $() $()
-
-# Mongo gost
-MONGO_HOST ?= 127.0.0.1
+# Project name
+PROJECT_NAME ?= $(shell basename $(CURDIR))
 
 # Node modules directory
 NODE_MODULES_DIR ?= node_modules
@@ -20,27 +17,25 @@ NODE_MODULES_DIR ?= node_modules
 # Node modules binary directory
 NODE_MODULES_BIN_DIR ?= $(NODE_MODULES_DIR)/.bin
 
+# Image optimize module
 IMAGEMIN ?= $(NODE_MODULES_BIN_DIR)/imagemin
 
-# Bem dir
+# Bem directory
 BEM_DIR ?= bem
 
-# Configs dir
+# Configs directory
 CONFIGS_DIR ?= configs
 
-# Node config dir
+# Node config directory
 CONFIG_NODE_DIR ?= $(CONFIGS_DIR)/node
 
-# Project name
-PROJECT_NAME ?= `basename $(PWD)`
-
-# Bem links filename
+# Bem links
 BEM_LINKS_FILE ?= $(BEM_DIR)/links.json
 
-# Bundle dir name
+# Bundle directory
 BUNDLE_DIR ?= bem/bundles/index
 
-# Bundle file name
+# Bundle file
 BUNDLE_FILE ?= index
 
 # Public directory
@@ -49,17 +44,14 @@ PUBLIC_DIR ?= public
 # Build directory
 BUILD_DIR ?= build
 
+# Build archive
+BUILD_ARCHIVE ?= build.tar.gz
+
 # Files suffixes for compress
-COMPRESS_SUFFIXES ?= css|js|eot|svg|ttf|woff|pdf|xml|txt
+COMPRESS_FILES_SUFFIXES ?= css|js|eot|svg|ttf|woff|pdf|xml|txt
 
 # Images suffixes for optimize
-OPTIMIZE_IMAGES_SUFFIXES ?= jpg jpeg png gif svg
-
-# Images suffixes for optimize comma separated
-OPTIMIZE_IMAGES_SUFFIXES_SEP_COMMA ?= $(subst $(SPACE),$(shell echo ,),$(OPTIMIZE_IMAGES_SUFFIXES))
-
-# Images suffixes for optimize vertical bar separated
-OPTIMIZE_IMAGES_SUFFIXES_SEP_VERT_BAR ?= $(subst $(SPACE),|,$(OPTIMIZE_IMAGES_SUFFIXES))
+OPTIMIZE_IMAGES_SUFFIXES ?= jpg|jpeg|png|gif|svg
 
 # Images suffixes for optimize
 OPTIMIZE_IMAGES ?= jpg jpeg png gif svg
@@ -82,7 +74,7 @@ export BUILD_ENV ?= production
 ########################################################
 
 #
-# Print the title of action
+# Print a title of action
 #
 # $(1) {String} Title
 #
@@ -97,20 +89,38 @@ endif
 ###                     Copy rules                   ###
 ########################################################
 
+# Make build
 .PHONY: build
-build: build.copy build.gzip-public build.dump
+build: build.remove \
+       build.create.dir \
+       build.copy.bem \
+       build.copy.app \
+       build.copy.makefiles \
+       build.copy.install-instructions \
+       build.copy.optimize-public-images \
+       build.copy.public-files \
+       build.gzip.public-files \
+       build.gzip
 
-.PHONY: build.copy
-build.copy: build.copy.bem build.copy.app \
-            build.copy.makefile build.copy.install-files \
-            build.copy.public-optimize-images build.copy.public-files
-
-.PHONY: build.copy.bem
-build.copy.bem:
-	$(call printActionTitle,Coping bem files)
+# Remove build directory and archive
+.PHONY: build.remove
+build.remove:
+	$(call printActionTitle,Removing build directory and archive)
 
 	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_ARCHIVE)
+
+# Create empty build directory
+.PHONY: build.create.dir
+build.create.dir:
+	$(call printActionTitle,Creating empty build directory)
+
 	mkdir $(BUILD_DIR)
+
+# Copy bem files
+.PHONY: build.copy.bem
+build.copy.bem:
+	$(call printActionTitle,Copying bem files)
 
 	mkdir -p $(BUILD_DIR)/$(BUNDLE_DIR)
 	cp $(BUNDLE_DIR)/$(BUNDLE_FILE).bemtree.min.js $(BUILD_DIR)/$(BUNDLE_DIR)
@@ -118,9 +128,10 @@ build.copy.bem:
 
 	cp $(BEM_LINKS_FILE) $(BUILD_DIR)/$(BEM_LINKS_FILE)
 
+# Copy application files
 .PHONY: build.copy.app
 build.copy.app:
-	$(call printActionTitle,Coping application files)
+	$(call printActionTitle,Copying application files)
 
 	cp index.js $(BUILD_DIR)
 
@@ -131,60 +142,66 @@ build.copy.app:
 	cp $(CONFIG_NODE_DIR)/default*.js $(BUILD_DIR)/$(CONFIG_NODE_DIR)
 	cp $(CONFIG_NODE_DIR)/$(BUILD_ENV)*.js $(BUILD_DIR)/$(CONFIG_NODE_DIR)
 
-.PHONY: build.copy.makefile
-build.copy.makefile:
-	$(call printActionTitle,Coping makefile)
+# Copy makefiles
+.PHONY: build.copy.makefiles
+build.copy.makefiles:
+	$(call printActionTitle,Copying makefiles)
 
 	mkdir $(BUILD_DIR)/makefiles
-	find makefiles -type f -d 1 -exec cp {} $(BUILD_DIR)/makefiles \;
-	cp makefiles/env/$(BUILD_ENV) $(BUILD_DIR)/Makefile
+	find makefiles -type d -d 1 -exec cp -rf {} $(BUILD_DIR)/makefiles \;
+	cp makefiles/$(BUILD_ENV) $(BUILD_DIR)/Makefile
 
-.PHONY: build.copy.install-files
-build.copy.install-files:
-	$(call printActionTitle,Coping install files')
+# Copy install instructions files
+.PHONY: build.copy.install-instructions
+build.copy.install-instructions:
+	$(call printActionTitle,Copying install instructions files)
 
 	cp bower.json $(BUILD_DIR)
 	cp .bowerrc $(BUILD_DIR)
 	cp package.json $(BUILD_DIR)
 
+ # Copy public files
 .PHONY: build.copy.public-files
 build.copy.public-files:
-	$(call printActionTitle,Coping not images files)
+	$(call printActionTitle,Copying public files)
 
 	find $(PUBLIC_DIR) -type f ! -name '.*' \
-	    | grep -Ev '/.+\.($(OPTIMIZE_IMAGES_SUFFIXES_SEP_VERT_BAR))$$' \
+	    | grep -Ev '/.+\.($(OPTIMIZE_IMAGES_SUFFIXES))$$' \
 	    | xargs -I {} rsync -R {} $(BUILD_DIR)/
 
 ########################################################
 ###                   Minify rules                   ###
 ########################################################
 
-.PHONY: build.copy.public-optimize-images
-build.copy.public-optimize-images:
-	$(call printActionTitle,Optimizing and coping public images)
+# Optimize and copy public images
+.PHONY: build.copy.optimize-public-images
+build.copy.optimize-public-images:
+	$(call printActionTitle,Optimizing and copying public images)
 
-	find $(PUBLIC_DIR) -type d \
-	    -exec $(IMAGEMIN) {}/*.{$(OPTIMIZE_IMAGES_SUFFIXES_SEP_COMMA)} \
-	    --plugin mozjpeg \
-	    --plugin pngquant \
-	    --plugin gifsicle \
-	    --plugin svgo \
-	    -o $(BUILD_DIR)/{} \;
+	find public -type f \
+	    | grep -E '\.($(OPTIMIZE_IMAGES_SUFFIXES))' \
+	    | sed -E 's|/[^/]+$$|/|' \
+	    | uniq \
+	    | xargs -I {} \
+	    $(IMAGEMIN) {}/* \
+            --plugin mozjpeg \
+            --plugin pngquant \
+            --plugin gifsicle \
+            --plugin svgo \
+            --out-dir $(BUILD_DIR)/{} \;
 
-.PHONY: build.gzip-public
-build.gzip-public:
-	$(call printActionTitle,Gziping public files)
+# Gzip public text files
+.PHONY: build.gzip.public-files
+build.gzip.public-files:
+	$(call printActionTitle,Gziping public text files)
 
 	find $(BUILD_DIR)/public \
-	    | grep -E '\.($(COMPRESS_SUFFIXES))' \
+	    | grep -E '\.($(COMPRESS_FILES_SUFFIXES))' \
 	    | xargs gzip -kv9
 
-########################################################
-###                    Dump rules                    ###
-########################################################
+# Gzip build directory
+.PHONY: build.gzip
+build.gzip:
+	$(call printActionTitle,Gziping build dir)
 
-.PHONY: build.dump
-build.dump:
-	$(call printActionTitle,Dumping database)
-
-	mongodump -h $(MONGO_HOST) -d $(PROJECT_NAME) -o $(BUILD_DIR)/dump
+	tar -czPf $(BUILD_ARCHIVE) $(BUILD_DIR)

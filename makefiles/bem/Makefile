@@ -21,10 +21,10 @@ ENB ?= $(NODE_MODULES_BIN_DIR)/enb
 # Borschik
 BORSCHIK ?= $(NODE_MODULES_BIN_DIR)/borschik
 
-# The bem directory
+# Bem directory
 BEM_DIR ?= bem
 
-# The static directory
+# Static directory
 STATIC_DIR ?= public/static
 
 ########################################################
@@ -32,7 +32,7 @@ STATIC_DIR ?= public/static
 ########################################################
 
 #
-# Print the title of action
+# Print a title of action
 #
 # $(1) {String} Title
 #
@@ -47,13 +47,13 @@ endif
 ###                     Bem rules                    ###
 ########################################################
 
-# Make bem
+# Assemble bem project
 .PHONY: bem
-bem: static-dir.delete bem-configs.create bem-make freeze-links
+bem: static-dir.delete bem-configs.create enb-make freeze-links
 
-# Assemble bem
-.PHONY: bem-make
-bem-make:
+# Make enb
+.PHONY: enb-make
+enb-make:
 	$(ENB) make ${tech} --no-cache --dir $(BEM_DIR)
 
 # Create bem configs
@@ -61,16 +61,16 @@ bem-make:
 bem-configs.create:
 	$(call printActionTitle,Creating bem configs)
 
-	ln -sf $(PWD)/$(NODE_MODULES_DIR)/app-bem-dev/borschik.json $(PWD)/$(BEM_DIR)/.borschik
+	ln -sf $(CURDIR)/$(NODE_MODULES_DIR)/app-bem-dev/borschik.json $(CURDIR)/$(BEM_DIR)/.borschik
 
 # Freeze links
 .PHONY: freeze-links
 freeze-links:
-	ln -sf $(PWD)/$(NODE_MODULES_DIR)/app-bem-dev/links.json $(PWD)/$(BEM_DIR)/links.tmp.json
+	ln -sf $(CURDIR)/$(NODE_MODULES_DIR)/app-bem-dev/links.json $(CURDIR)/$(BEM_DIR)/links.tmp.json
 	$(BORSCHIK) -t json -i $(BEM_DIR)/links.tmp.json -o $(BEM_DIR)/links.json
 	rm $(BEM_DIR)/links.tmp.json
 
-# Create the static directory
+# Create a static directory
 .PHONY: static-dir.create
 static-dir.create:
 	$(call printActionTitle,Сreating static dir)
@@ -83,7 +83,7 @@ static-dir.create:
 
 # Clean
 .PHONY: clean
-clean: bem-configs.delete static-dir.delete bundles.delete temp-files.delete
+clean: bem-configs.delete static-dir.delete bundles.delete tmp-files.remove
 
 # Delete bundles
 .PHONY: bundles.delete
@@ -100,16 +100,16 @@ bem-configs.delete:
 	rm -f $(BEM_DIR)/.borschik
 	rm -f $(BEM_DIR)/links.json
 
-# Delete the static directory
+# Delete a static directory
 .PHONY: static-dir.delete
 static-dir.delete:
 	$(call printActionTitle,Deleting the static dir)
 
 	rm -rf $(STATIC_DIR)
 
-# Delete temporary files
-.PHONY: temp-files.delete
-temp-files.delete:
+# Remove temporary files
+.PHONY: tmp-files.remove
+tmp-files.remove:
 	$(call printActionTitle,Deleting temporary files)
 
 	rm -rf $(BEM_PATH)/.enb/tmp
