@@ -41,11 +41,14 @@ BUNDLE_FILE ?= index
 # Public directory
 PUBLIC_DIR ?= public
 
+# Build name
+BUILD_NAME ?= build-123
+
 # Build directory
-BUILD_DIR ?= build
+BUILD_DIR ?= $(BUILD_NAME)
 
 # Build archive
-BUILD_ARCHIVE ?= build.tar.gz
+BUILD_ARCHIVE ?= $(BUILD_DIR).tar.gz
 
 # Files suffixes for compress
 COMPRESS_FILES_SUFFIXES ?= css|js|eot|svg|ttf|woff|pdf|xml|txt
