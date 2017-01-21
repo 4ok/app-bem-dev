@@ -14,6 +14,10 @@ ifndef SERVER_HOST
     $(error Variable SERVER_HOST isn't defined)
 endif
 
+ifndef REMOTE_BUILD_NAME
+    $(error Variable REMOTE_BUILD_NAME isn't defined)
+endif
+
 # Project name
 PROJECT_NAME ?= $(shell jq -r '.name' package.json)
 
@@ -31,12 +35,6 @@ REMOTE_BUILDS_DIR ?= $(REMOTE_WWW_ROOT)/builds
 
 # Remote projects directory
 REMOTE_PROJECTS_DIR ?= $(REMOTE_WWW_ROOT)/projects
-
-# Unix timestamp
-UNIX_TIMESTAMP := $(shell date +%s)
-
-# Remote build name
-REMOTE_BUILD_NAME ?= $(PROJECT_NAME)-build-$(UNIX_TIMESTAMP)
 
 # Remote build archive
 REMOTE_BUILD_ARCHIVE ?= $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_NAME).tar.gz
@@ -72,9 +70,7 @@ endif
 deploy: build.local.copy-to-remote-builds-dir \
         build.remote.unzip \
         build.remote.install \
-        build.remote.create-symlink \
-        build.remote.remove-archive \
-        project.remote.start
+        build.remote.remove-archive
 
 # Remove a local build archive
 .PHONY: build.local.remove
@@ -125,8 +121,8 @@ build.remote.remove-archive:
 	ssh $(SERVER_HOST) 'rm -rf $(REMOTE_BUILD_ARCHIVE)'
 
 # Start or restart project
-.PHONY: project.remote.start
-project.remote.start:
+.PHONY: project.remote.startOrRestart
+project.remote.startOrRestart: build.remote.create-symlink
 	$(call printActionTitle,Start or restart project)
 
-	ssh $(SERVER_HOST) 'make --no-print-directory -C $(REMOTE_BUILD_DIR) startOrRestart'
+	ssh $(SERVER_HOST) 'make --no-print-directory -C $(REMOTE_PROJECT_DIR) startOrRestart'
