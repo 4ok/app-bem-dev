@@ -100,7 +100,7 @@ build.local.copy-to-remote-tmp-dir:
 # Unzip and move build to a temporary directory
 .PHONY: build.remote.unzip
 build.remote.unzip:
-	$(call printActionTitle,Unziping build in temporary directory)
+	$(call printActionTitle,Unziping and move build to a temporary directory)
 
 	ssh $(SERVER_IP) ' \
 	    rm -rf $(REMOTE_TMP_BUILD_DIR) \
