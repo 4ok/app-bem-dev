@@ -8,8 +8,6 @@
 ###                     Variables                    ###
 ########################################################
 
-MAKEFLAGS += --no-print-directory
-
 ifndef SERVER_HOST
     $(error Variable SERVER_HOST isn't defined)
 endif
@@ -122,7 +120,7 @@ build.remote.remove-archive:
 
 # Start or restart project
 .PHONY: project.remote.startOrRestart
-project.remote.startOrRestart: build.remote.create-symlink
+project.remote.startOrRestart:
 	$(call printActionTitle,Start or restart project)
 
 	ssh $(SERVER_HOST) 'make --no-print-directory -C $(REMOTE_PROJECT_DIR) startOrRestart'
