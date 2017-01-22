@@ -104,10 +104,10 @@ build.remote.install:
 
 	ssh $(SERVER_HOST) 'make --no-print-directory -C $(REMOTE_BUILD_DIR) install'
 
-# Create symlink in a project directory
+# Create symlink to a project
 .PHONY: build.remote.create-symlink
 build.remote.create-symlink:
-	$(call printActionTitle,Creating symlink in a project directory)
+	$(call printActionTitle,Creating symlink in a project)
 
 	ssh $(SERVER_HOST) 'ln -sfn $(REMOTE_BUILD_DIR) $(REMOTE_PROJECT_DIR)'
 
