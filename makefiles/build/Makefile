@@ -41,7 +41,7 @@ BUNDLE_FILE ?= index
 # Public directory
 PUBLIC_DIR ?= public
 
-# Build name
+# Build name@@@@@@@@@@@@@@@@
 BUILD_NAME ?= build
 
 # Build directory
