@@ -42,7 +42,7 @@ BUNDLE_FILE ?= index
 PUBLIC_DIR ?= public
 
 # Build name
-BUILD_NAME ?= build-123
+BUILD_NAME ?= build
 
 # Build directory
 BUILD_DIR ?= $(BUILD_NAME)
