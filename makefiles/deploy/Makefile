@@ -23,7 +23,7 @@ PROJECT_NAME ?= $(shell jq -r '.name' package.json)
 LOCAL_BUILD_DIR ?= build
 
 # Loal build archive
-LOCAL_BUILD_ARCHIVE ?= build.tar.gz
+LOCAL_BUILD_ARCHIVE ?= build.tgz
 
 # Remote www root
 REMOTE_WWW_ROOT ?= /var/www
@@ -35,7 +35,7 @@ REMOTE_BUILDS_DIR ?= $(REMOTE_WWW_ROOT)/builds
 REMOTE_PROJECTS_DIR ?= $(REMOTE_WWW_ROOT)/projects
 
 # Remote build archive
-REMOTE_BUILD_ARCHIVE ?= $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_NAME).tar.gz
+REMOTE_BUILD_ARCHIVE ?= $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_NAME).tgz
 
 # Remote build directory
 REMOTE_BUILD_DIR ?= $(REMOTE_BUILDS_DIR)/$(REMOTE_BUILD_NAME)

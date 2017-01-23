@@ -48,7 +48,7 @@ BUILD_NAME ?= build
 BUILD_DIR ?= $(BUILD_NAME)
 
 # Build archive
-BUILD_ARCHIVE ?= $(BUILD_DIR).tar.gz
+BUILD_ARCHIVE ?= $(BUILD_DIR).tgz
 
 # Files suffixes for compress
 COMPRESS_FILES_SUFFIXES ?= css|js|eot|svg|ttf|woff|pdf|xml|txt
@@ -100,7 +100,6 @@ build: build.remove \
        build.copy.app \
        build.copy.makefiles \
        build.copy.install-instructions \
-       build.copy.optimize-public-images \
        build.copy.public-files \
        build.gzip.public-files \
        build.gzip
