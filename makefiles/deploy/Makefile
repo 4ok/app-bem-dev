@@ -78,7 +78,7 @@ endif
 server.build.extract:
 	$(call printActionTitle,Extracting build)
 
-    rm -rf $(REMOTE_BUILD_DIR) \
+	rm -rf $(REMOTE_BUILD_DIR) \
     && mkdir $(REMOTE_BUILD_DIR) \
     && tar \
         -C $(REMOTE_BUILD_DIR) --strip-components 1 \
@@ -104,7 +104,6 @@ server.project.startOrRestart:
 	$(call printActionTitle,Start or restart project)
 
 	make --no-print-directory -C $(REMOTE_PROJECT_DIR) startOrRestart
-
 
 
 
