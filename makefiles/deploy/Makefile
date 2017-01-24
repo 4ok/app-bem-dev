@@ -63,6 +63,56 @@ endif
 ###                   Deploy rules                   ###
 ########################################################
 
+
+
+
+
+
+
+################################################################
+
+
+
+
+.PHONY: server.build.extract
+server.build.extract:
+	$(call printActionTitle,Extracting build)
+
+    rm -rf $(REMOTE_BUILD_DIR) \
+    && mkdir $(REMOTE_BUILD_DIR) \
+    && tar \
+        -C $(REMOTE_BUILD_DIR) --strip-components 1 \
+        -zxf $(REMOTE_BUILD_ARCHIVE) 2>/dev/null \
+
+
+.PHONY: server.build.install
+server.build.install:
+	$(call printActionTitle,Installing modules)
+
+	make --no-print-directory -C $(REMOTE_BUILD_DIR) install
+
+
+.PHONY: server.build.create-symlink
+server.build.create-symlink:
+	$(call printActionTitle,Creating symlink to the project)
+
+	ln -sfn $(REMOTE_BUILD_DIR) $(REMOTE_PROJECT_DIR)
+
+
+.PHONY: server.project.startOrRestart
+server.project.startOrRestart:
+	$(call printActionTitle,Start or restart project)
+
+	make --no-print-directory -C $(REMOTE_PROJECT_DIR) startOrRestart
+
+
+
+
+
+
+
+#################################################################
+
 # Deploy a project
 .PHONY: deploy
 deploy: build.local.copy-to-remote-builds-dir \
