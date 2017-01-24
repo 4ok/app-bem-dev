@@ -78,12 +78,11 @@ endif
 server.build.extract:
 	$(call printActionTitle,Extracting build)
 
-	rm -rf $(REMOTE_BUILD_DIR) \
-    && mkdir $(REMOTE_BUILD_DIR) \
-    && tar \
+	rm -rf $(REMOTE_BUILD_DIR)
+	mkdir $(REMOTE_BUILD_DIR)
+	tar \
         -C $(REMOTE_BUILD_DIR) --strip-components 1 \
-        -zxf $(REMOTE_BUILD_ARCHIVE) 2>/dev/null \
-
+        -zxf $(REMOTE_BUILD_ARCHIVE) 2>/dev/null
 
 .PHONY: server.build.install
 server.build.install:
@@ -91,13 +90,11 @@ server.build.install:
 
 	make --no-print-directory -C $(REMOTE_BUILD_DIR) install
 
-
 .PHONY: server.build.create-symlink
 server.build.create-symlink:
 	$(call printActionTitle,Creating symlink to the project)
 
 	ln -sfn $(REMOTE_BUILD_DIR) $(REMOTE_PROJECT_DIR)
-
 
 .PHONY: server.project.startOrRestart
 server.project.startOrRestart:
