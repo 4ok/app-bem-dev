@@ -42,7 +42,7 @@ BUNDLE_FILE ?= index
 PUBLIC_DIR ?= public
 
 # Release name
-RELEASE_NAME ?= build
+RELEASE_NAME ?= release
 
 # Release directory
 RELEASE_DIR ?= $(RELEASE_NAME)
