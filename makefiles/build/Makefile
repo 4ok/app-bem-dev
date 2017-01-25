@@ -42,10 +42,10 @@ BUNDLE_FILE ?= index
 PUBLIC_DIR ?= public
 
 # Last build name
-LAST_BUILD_NAME ?= build
+BUILD_NAME ?= build
 
 # Build directory
-LAST_BUILD_DIR ?= $(LAST_BUILD_NAME)
+BUILD_DIR ?= $(BUILD_NAME)
 
 # Files suffixes for compress
 COMPRESS_FILES_SUFFIXES ?= css|js|eot|svg|ttf|woff|pdf|xml|txt
@@ -106,57 +106,57 @@ build: build.remove \
 build.remove:
 	$(call printActionTitle,Removing build directory and archive)
 
-	rm -rf $(LAST_BUILD_DIR)
+	rm -rf $(BUILD_DIR)
 
 # Create empty build directory
 .PHONY: build.create.dir
 build.create.dir:
 	$(call printActionTitle,Creating empty build directory)
 
-	mkdir $(LAST_BUILD_DIR)
+	mkdir $(BUILD_DIR)
 
 # Copy bem files
 .PHONY: build.copy.bem
 build.copy.bem:
 	$(call printActionTitle,Copying bem files)
 
-	mkdir -p $(LAST_BUILD_DIR)/$(BUNDLE_DIR)
-	cp $(BUNDLE_DIR)/$(BUNDLE_FILE).bemtree.min.js $(LAST_BUILD_DIR)/$(BUNDLE_DIR)
-	cp $(BUNDLE_DIR)/$(BUNDLE_FILE).bemhtml.min.js $(LAST_BUILD_DIR)/$(BUNDLE_DIR)
+	mkdir -p $(BUILD_DIR)/$(BUNDLE_DIR)
+	cp $(BUNDLE_DIR)/$(BUNDLE_FILE).bemtree.min.js $(BUILD_DIR)/$(BUNDLE_DIR)
+	cp $(BUNDLE_DIR)/$(BUNDLE_FILE).bemhtml.min.js $(BUILD_DIR)/$(BUNDLE_DIR)
 
-	cp $(BEM_LINKS_FILE) $(LAST_BUILD_DIR)/$(BEM_LINKS_FILE)
+	cp $(BEM_LINKS_FILE) $(BUILD_DIR)/$(BEM_LINKS_FILE)
 
 # Copy application files
 .PHONY: build.copy.app
 build.copy.app:
 	$(call printActionTitle,Copying application files)
 
-	cp index.js $(LAST_BUILD_DIR)
+	cp index.js $(BUILD_DIR)
 
-	cp -r routes $(LAST_BUILD_DIR)
-	cp -r src $(LAST_BUILD_DIR)
+	cp -r routes $(BUILD_DIR)
+	cp -r src $(BUILD_DIR)
 
-	mkdir -p $(LAST_BUILD_DIR)/$(CONFIG_NODE_DIR)
-	cp $(CONFIG_NODE_DIR)/default*.js $(LAST_BUILD_DIR)/$(CONFIG_NODE_DIR)
-	cp $(CONFIG_NODE_DIR)/$(BUILD_ENV)*.js $(LAST_BUILD_DIR)/$(CONFIG_NODE_DIR)
+	mkdir -p $(BUILD_DIR)/$(CONFIG_NODE_DIR)
+	cp $(CONFIG_NODE_DIR)/default*.js $(BUILD_DIR)/$(CONFIG_NODE_DIR)
+	cp $(CONFIG_NODE_DIR)/$(BUILD_ENV)*.js $(BUILD_DIR)/$(CONFIG_NODE_DIR)
 
 # Copy makefiles
 .PHONY: build.copy.makefiles
 build.copy.makefiles:
 	$(call printActionTitle,Copying makefiles)
 
-	mkdir $(LAST_BUILD_DIR)/makefiles
-	find makefiles -type d -d 1 -exec cp -rf {} $(LAST_BUILD_DIR)/makefiles \;
-	cp makefiles/$(BUILD_ENV) $(LAST_BUILD_DIR)/Makefile
+	mkdir $(BUILD_DIR)/makefiles
+	find makefiles -type d -d 1 -exec cp -rf {} $(BUILD_DIR)/makefiles \;
+	cp makefiles/$(BUILD_ENV) $(BUILD_DIR)/Makefile
 
 # Copy install instructions files
 .PHONY: build.copy.install-instructions
 build.copy.install-instructions:
 	$(call printActionTitle,Copying install instructions files)
 
-	cp bower.json $(LAST_BUILD_DIR)
-	cp .bowerrc $(LAST_BUILD_DIR)
-	cp package.json $(LAST_BUILD_DIR)
+	cp bower.json $(BUILD_DIR)
+	cp .bowerrc $(BUILD_DIR)
+	cp package.json $(BUILD_DIR)
 
  # Copy public files
 .PHONY: build.copy.public-files
@@ -165,7 +165,7 @@ build.copy.public-files:
 
 	find $(PUBLIC_DIR) -type f ! -name '.*' \
 	    | grep -Ev '/.+\.($(OPTIMIZE_IMAGES_SUFFIXES))$$' \
-	    | xargs -I {} rsync -R {} $(LAST_BUILD_DIR)/
+	    | xargs -I {} rsync -R {} $(BUILD_DIR)/
 
 ########################################################
 ###                   Minify rules                   ###
@@ -186,13 +186,13 @@ build.copy.optimize-public-images:
             --plugin pngquant \
             --plugin gifsicle \
             --plugin svgo \
-            --out-dir $(LAST_BUILD_DIR)/{} \;
+            --out-dir $(BUILD_DIR)/{} \;
 
 # Gzip public text files
 .PHONY: build.gzip.public-files
 build.gzip.public-files:
 	$(call printActionTitle,Gziping public text files)
 
-	find $(LAST_BUILD_DIR)/public \
+	find $(BUILD_DIR)/public \
 	    | grep -E '\.($(COMPRESS_FILES_SUFFIXES))' \
 	    | xargs gzip -kv9
