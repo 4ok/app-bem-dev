@@ -97,7 +97,6 @@ build: build.remove.release-dir \
        build.copy.app-files \
        build.copy.makefiles \
        build.copy.install-instructions-files \
-       build.copy.optimize-public-images \
        build.copy.not-images-public-files \
        build.gzip.public-files
 
