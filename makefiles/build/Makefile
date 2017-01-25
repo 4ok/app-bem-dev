@@ -1,7 +1,7 @@
 #
 # Actions:
 #
-#    build      Build application
+#    build      Create a build
 #
 
 ########################################################
@@ -46,9 +46,6 @@ LAST_BUILD_NAME ?= build
 
 # Build directory
 LAST_BUILD_DIR ?= $(LAST_BUILD_NAME)
-
-# Build archive
-BUILD_ARCHIVE ?= $(LAST_BUILD_DIR).tgz
 
 # Files suffixes for compress
 COMPRESS_FILES_SUFFIXES ?= css|js|eot|svg|ttf|woff|pdf|xml|txt
@@ -100,9 +97,9 @@ build: build.remove \
        build.copy.app \
        build.copy.makefiles \
        build.copy.install-instructions \
+       build.copy.optimize-public-images \
        build.copy.public-files \
-       build.gzip.public-files \
-       build.gzip
+       build.gzip.public-files
 
 # Remove build directory and archive
 .PHONY: build.remove
@@ -110,7 +107,6 @@ build.remove:
 	$(call printActionTitle,Removing build directory and archive)
 
 	rm -rf $(LAST_BUILD_DIR)
-	rm -rf $(BUILD_ARCHIVE)
 
 # Create empty build directory
 .PHONY: build.create.dir
@@ -200,10 +196,3 @@ build.gzip.public-files:
 	find $(LAST_BUILD_DIR)/public \
 	    | grep -E '\.($(COMPRESS_FILES_SUFFIXES))' \
 	    | xargs gzip -kv9
-
-# Gzip build directory
-.PHONY: build.gzip
-build.gzip:
-	$(call printActionTitle,Gziping build dir)
-
-	tar -czPf $(BUILD_ARCHIVE) $(LAST_BUILD_DIR)
