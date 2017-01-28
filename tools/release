@@ -1,0 +1,278 @@
+#!/usr/bin/env bash
+
+########################################################
+###                        Help                      ###
+########################################################
+
+HELP='Create a release build
+
+Usage:
+
+    release [action]
+
+Actions:
+
+    create   Create a release build'
+
+########################################################
+###                     Variables                    ###
+########################################################
+
+# Project name
+PROJECT_NAME=$(jq -r '.name' package.json)
+
+# Node modules directory
+NODE_MODULES_DIR='node_modules'
+
+# Node modules binary directory
+NODE_MODULES_BIN_DIR="$NODE_MODULES_DIR/.bin"
+
+# Image optimize module
+IMAGEMIN="$NODE_MODULES_BIN_DIR/imagemin"
+
+# Bem directory
+BEM_DIR='bem'
+
+# Configs directory
+CONFIGS_DIR='configs'
+
+# Node config directory
+CONFIG_NODE_DIR="$CONFIGS_DIR/node"
+
+# Bem links
+BEM_LINKS_FILE="$BEM_DIR/links.json"
+
+# Bundle directory
+BUNDLE_DIR="$BEM_DIR/bundles/index"
+
+# Bundle file
+BUNDLE_FILENAME='index'
+
+# Public directory
+PUBLIC_DIR='public'
+
+# Release directory
+RELEASE_DIR="release"
+
+# Files suffixes for compress
+COMPRESS_FILES_SUFFIXES='css|js|eot|svg|ttf|woff|pdf|xml|txt'
+
+# Images suffixes for optimize
+OPTIMIZE_IMAGES_SUFFIXES='jpg|jpeg|png|gif|svg'
+
+# Images suffixes for optimize
+OPTIMIZE_IMAGES='jpg jpeg png gif svg'
+
+# Build environment
+BUILD_ENV='production'
+
+# Default number of threads
+DEFAULT_NUM_THREADS=5
+
+# Number of threads for images optimize
+OPTIMIZE_IMAGES_NUM_THREADS="$DEFAULT_NUM_THREADS"
+
+# Number of threads for gzip files
+GZIP_FILES_NUM_THREADS="$DEFAULT_NUM_THREADS"
+
+########################################################
+###                      Export                      ###
+########################################################
+
+# Gzip compress level
+export GZIP=-9
+
+# Enb make is minify files
+export ENB_IS_MINIFY=1
+
+########################################################
+###                      Helpers                     ###
+########################################################
+
+#
+# Help
+#
+help() {
+    echo "$HELP"
+}
+
+#
+# Print a title of action
+#
+# @1 {string} Title
+#
+printTitle() {
+    echo "===> $1"
+}
+
+#
+# Create a release dir
+#
+createReleaseDir() {
+	printTitle 'Creating a release directory'
+
+	mkdir "$RELEASE_DIR"
+}
+
+#
+# Copy files
+#
+copyFiles() {
+
+    # Copy bem files
+	printTitle 'Copying bem files'
+
+	mkdir -p "$RELEASE_DIR/$BUNDLE_DIR"
+	cp "$BUNDLE_DIR/$BUNDLE_FILENAME.bemtree.min.js" "$RELEASE_DIR/$BUNDLE_DIR"
+	cp "$BUNDLE_DIR/$BUNDLE_FILENAME.bemhtml.min.js" "$RELEASE_DIR/$BUNDLE_DIR"
+
+	cp "$BEM_LINKS_FILE" "$RELEASE_DIR/$BEM_LINKS_FILE"
+
+	# Copy application files
+	printTitle 'Copying application files'
+
+	cp index.js "$RELEASE_DIR"
+
+	cp -r routes "$RELEASE_DIR"
+	cp -r src "$RELEASE_DIR"
+
+	mkdir -p "$RELEASE_DIR/$CONFIG_NODE_DIR"
+	cp "$CONFIG_NODE_DIR/default"*'.js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
+	cp "$CONFIG_NODE_DIR/$BUILD_ENV"*.'js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
+
+    # todo delete
+    # Copy makefiles
+	printTitle 'Copying makefiles'
+
+	mkdir -p "$RELEASE_DIR/makefiles"
+	find makefiles -type d -d 1 -exec cp -rf '{}' "$RELEASE_DIR/makefiles" \;
+	cp "makefiles/$BUILD_ENV" "$RELEASE_DIR/Makefile"
+
+	# Copy install instructions files
+	printTitle 'Copying install instructions files'
+
+	cp bower.json "$RELEASE_DIR"
+	cp .bowerrc "$RELEASE_DIR"
+	cp package.json "$RELEASE_DIR"
+
+	# Copy not images files
+	printTitle 'Copying not images files'
+
+	find "$PUBLIC_DIR" -type f ! -name '.*' \
+	    | grep -Ev "/.+\.($OPTIMIZE_IMAGES_SUFFIXES)$" \
+	    | xargs -I '{}' rsync -R '{}' "$RELEASE_DIR"
+}
+
+#
+# Optimize and copy images
+#
+optimizeAndCopyImages() {
+	printTitle 'Optimizing and copying images'
+
+    printImagesList "$PUBLIC_DIR" \
+        | tr ' ' '\n' \
+	    | sed -E 's|/[^/]+$$|/|' \
+	    | uniq \
+	    | xargs -P "$OPTIMIZE_IMAGES_NUM_THREADS" -I '{}' \
+	    "$IMAGEMIN" '{}/*' \
+            --plugin mozjpeg \
+            --plugin pngquant \
+            --plugin gifsicle \
+            --plugin svgo \
+            --out-dir "$RELEASE_DIR/{}" \
+            > /dev/null
+}
+
+#
+# Imaget list
+#
+# @1 {string} Directory
+#
+printImagesList() {
+    echo $(find $1 -type f | grep -E "\.($OPTIMIZE_IMAGES_SUFFIXES)")
+}
+
+#
+# Print optimize images result
+#
+printOptimizeImagesResult() {
+    imagesSizeBefore=$(printTotalSize "$PUBLIC_DIR")
+    imagesSizeAfter=$(printTotalSize "release/$PUBLIC_DIR")
+    imagesSizeDifference=$(echo "$imagesSizeBefore - $imagesSizeAfter" | bc)
+    imagesSizePercentDifference=$(echo "$imagesSizeDifference * 100 / $imagesSizeBefore" | bc | xargs -I '{}' echo '{}%')
+
+    echo 'Result'
+    echo '-------'
+
+    printSizeInMb "$imagesSizeBefore" 'Before'
+    printSizeInMb "$imagesSizeAfter" 'After'
+    printSizeInMb "$imagesSizeDifference" 'Difference' " ($imagesSizePercentDifference)"
+}
+
+#
+# Total files size in KB
+#
+# @1 {string} Directory
+#
+printTotalSize() {
+    echo $(printImagesList $1 | xargs du -c | tail -1 | awk '{print $1}')
+}
+
+#
+# Convert KB to MB and add title
+#
+# @1 {number} Size in KB
+# @2 {string} Title
+# @3 {string} Epilog
+#
+printSizeInMb() {
+    echo "$1 / 1024" | bc -l | xargs printf "$2: %.2f MB\n" | xargs -I '{}' echo "{}$3"
+}
+
+#
+# Gzip texts files
+#
+gzipTextsFiles() {
+	$(call printActionTitle,Gziping texts files)
+
+	find $(RELEASE_DIR)/$(PUBLIC_DIR) \
+	    | grep -E '\.($(COMPRESS_FILES_SUFFIXES))' \
+	    | xargs -P $(GZIP_FILES_NUM_THREADS) gzip -kv"$GZIP"
+}
+
+########################################################
+###                      Actions                     ###
+########################################################
+
+#
+# Create a release build
+#
+create() {
+    remove
+    createReleaseDir
+    copyFiles
+    optimizeAndCopyImages
+    printOptimizeImagesResult
+}
+
+#
+# Remove a release build
+#
+remove() {
+    printTitle 'Removing a release directory'
+
+    rm -rf "$RELEASE_DIR"
+}
+
+########################################################
+###                    Call action                   ###
+########################################################
+
+case $1 in
+    create|remove)
+        $1
+    ;;
+    *)
+        help
+    ;;
+esac
