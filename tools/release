@@ -199,7 +199,7 @@ printOptimizeImagesResult() {
     imagesSizeBefore=$(printTotalSize "$PUBLIC_DIR")
     imagesSizeAfter=$(printTotalSize "release/$PUBLIC_DIR")
     imagesSizeDifference=$(echo "$imagesSizeBefore - $imagesSizeAfter" | bc)
-    imagesSizePercentDifference=$(echo "$imagesSizeDifference * 100 / $imagesSizeBefore" | bc | xargs -I '{}' echo '{}%')
+    imagesSizePercentDifference=$(echo "$imagesSizeDifference * 100 / $imagesSizeBefore" | bc | xargs -I '{}' echo '{}%%')
 
     printSizeInMb "$imagesSizeBefore" 'Before'
     printSizeInMb "$imagesSizeAfter" 'After'
