@@ -201,9 +201,6 @@ printOptimizeImagesResult() {
     imagesSizeDifference=$(echo "$imagesSizeBefore - $imagesSizeAfter" | bc)
     imagesSizePercentDifference=$(echo "$imagesSizeDifference * 100 / $imagesSizeBefore" | bc | xargs -I '{}' echo '{}%')
 
-    echo 'Result'
-    echo '-------'
-
     printSizeInMb "$imagesSizeBefore" 'Before'
     printSizeInMb "$imagesSizeAfter" 'After'
     printSizeInMb "$imagesSizeDifference" 'Difference' " ($imagesSizePercentDifference)"
@@ -226,7 +223,7 @@ printTotalSize() {
 # @3 {string} Epilog
 #
 printSizeInMb() {
-    echo "$1 / 1024" | bc -l | xargs printf "$2: %.2f MB\n" | xargs -I '{}' echo "{}$3"
+    echo "$1 / 1024" | bc -l | xargs printf "$2: %.2f MB$3\n"
 }
 
 #
