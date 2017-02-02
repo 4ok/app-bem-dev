@@ -48,7 +48,7 @@ APP_TOOL := $(CORE_TOOLS)/application
 MODULE_TOOL := $(DEV_TOOLS)/module
 
 # Bem tool
-BEM_TOOL := $(DEV_TOOLS)/bem/bem
+BEM_TOOL := $(DEV_TOOLS)/bem
 
 # Debug tool
 DEBUG_TOOL := $(DEV_TOOLS)/debug
