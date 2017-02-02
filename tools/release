@@ -171,6 +171,7 @@ copyFiles() {
 	rm -rf package.json \
 	       bower.json \
 	       .bowerrc
+}
 
 #
 # Optimize and copy images
