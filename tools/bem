@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+
+########################################################
+###                        Help                      ###
+########################################################
+
+HELP='
+BEM actions
+
+Usage:
+
+    bem [action]
+
+ Actions:
+
+    make   Assemble bem bundles
+    clean  Clean assembled files
+'
+
+########################################################
+###                     Variables                    ###
+########################################################
+
+# Node modules directory
+NODE_MODULES_DIR='node_modules'
+
+# Node modules binary directory
+NODE_MODULES_BIN_DIR="$NODE_MODULES_DIR/.bin"
+
+# Enb
+ENB="$NODE_MODULES_BIN_DIR/enb"
+
+# Borschik
+BORSCHIK="$NODE_MODULES_BIN_DIR/borschik"
+
+# Bem directory
+BEM_DIR='bem'
+
+# Static directory
+STATIC_DIR='public/static'
+
+########################################################
+###                      Helpers                     ###
+########################################################
+
+#
+# Print a title of action
+#
+# @1 {string} Title
+#
+print_title() {
+    echo "===> $1"
+}
+
+########################################################
+###                      Actions                     ###
+########################################################
+
+#
+# Help
+#
+help() {
+    echo "$HELP"
+}
+
+# Assemble bem project
+make() {
+    remove_static_dir
+
+	# Create bem configs
+    print_title 'Creating bem configs'
+
+	ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/borschik.json" "$PWD/$BEM_DIR/.borschik"
+
+	# Make enb
+    print_title 'Making enb'
+
+	"$ENB" make --no-cache --dir "$BEM_DIR"
+
+	# Freeze links
+    print_title 'Freezing links'
+
+	ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/links.json" "$PWD/$BEM_DIR/links.tmp.json"
+
+	"$BORSCHIK" \
+	    -t json \
+	    -i "$BEM_DIR/links.tmp.json" \
+	    -o "$BEM_DIR/links.json"
+
+	rm -f "$BEM_DIR/links.tmp.json" \
+	      "$BEM_DIR/.borschik"
+}
+
+# Remove a static directory
+remove_static_dir() {
+	print_title 'Removing the static dir'
+
+	rm -rf "$STATIC_DIR"
+}
+
+# Clean
+clean() {
+    remove_static_dir
+
+    # Remove bem configs
+	print_title 'Removing bem configs'
+
+	rm -f "$BEM_DIR/.borschik" \
+	      "$BEM_DIR/links.json"
+
+	# Remove temporary files
+	print_title 'Removing temporary files'
+
+	rm -rf "$BEM_DIR/.enb/tmp"
+}
+
+########################################################
+###                    Call action                   ###
+########################################################
+
+case "$1" in
+    make|clean)
+        "$1"
+    ;;
+    *)
+        help
+    ;;
+esac
+

@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+########################################################
+###                        Help                      ###
+########################################################
+
+HELP='
+Debug actions
+
+Usage:
+
+    debug [action]
+
+ Actions:
+
+    process     Show the application process
+    logs        Show application logs
+'
+
+########################################################
+###                     Variables                    ###
+########################################################
+
+# Project name
+PROJECT_NAME=$(jq -r '.name' 'package.json')
+
+# Process manager
+PROCESS_MANAGER='pm2'
+
+########################################################
+###                      Helpers                     ###
+########################################################
+
+#
+# Print a title of action
+#
+# @1 {string} Title
+#
+print_title() {
+    echo "===> $1"
+}
+
+########################################################
+###                     Actions                      ###
+########################################################
+
+#
+# Help
+#
+help() {
+    echo "$HELP"
+}
+
+#
+# Show the current process
+#
+process() {
+	print_title 'Application process'
+
+	"$PROCESS_MANAGER" show "$PROJECT_NAME"
+}
+
+#
+# Show logs
+#
+logs() {
+	print_title 'Application logs'
+
+	"$PROCESS_MANAGER" logs "$PROJECT_NAME"
+}
+
+
+########################################################
+###                    Call action                   ###
+########################################################
+
+case "$1" in
+    process|logs)
+        "$1"
+    ;;
+    *)
+        help
+    ;;
+esac

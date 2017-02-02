@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+
+########################################################
+###                        Help                      ###
+########################################################
+
+HELP='
+Modules actions
+
+Usage:
+
+    module [action]
+
+ Actions:
+
+    install          Install npm and bower modules
+    uninstall        Uninstall npm and bower modules
+
+    npm.install      Install npm modules
+    npm.uninstall    Remove npm modules
+    npm.prune        Prune npm modules
+
+    bower.install    Install bower modules
+    bower.uninstall  Remove bower modules
+    bower.prune      Prune bower modules
+'
+
+########################################################
+###                     Variables                    ###
+########################################################
+
+# Node directories
+NODE_BIN_DIR=(
+    '/usr/bin'
+    '/usr/local/bin'
+)
+
+# Npm
+NPM=$(find "${NODE_BIN_DIR[@]}" -name 'npm' \( -type f -o -type l \))
+
+# Node modules directory
+NODE_MODULES_DIR='node_modules'
+
+# Bower bin
+BOWER="$NODE_MODULES_DIR/.bin/bower"
+
+BOWER_COMMON_ARGS=(
+    '--allow-root'
+)
+
+# Bower modules directory
+BOWER_MODULES_DIR='bower_modules'
+
+# Node environment
+if [[ -z $NODE_ENV ]]; then
+    NODE_ENV='development'
+fi
+
+########################################################
+###                      Helpers                     ###
+########################################################
+
+#
+# Print a title of action
+#
+# @1 {string} Title
+#
+print_title() {
+    echo "===> $1"
+}
+
+########################################################
+###                     Actions                      ###
+########################################################
+
+#
+# Help
+#
+help() {
+    echo "$HELP"
+}
+
+##### Common #####
+
+#
+# Install npm, bower modules
+#
+install() {
+    npm_install
+    bower_install
+}
+
+#
+# Uninstall npm, bower modules
+#
+uninstall() {
+    npm_uninstall
+    bower_uninstall
+}
+
+#
+# Prune npm, bower modules
+#
+prune() {
+    npm_prune
+    bower_prune
+}
+
+##### Npm #####
+
+#
+# Install npm modules
+#
+npm_install() {
+	print_title 'Installing npm modules'
+
+	"$NPM" cache clean
+	"$NPM" install "--$NODE_ENV"
+}
+
+#
+# Remove npm modules
+#
+npm_uninstall() {
+	print_title 'Removing npm modules'
+
+	rm -rf "$NODE_MODULES_DIR"
+}
+
+#
+# Prune npm modules
+#
+npm_prune() {
+	print_title 'Pruning npm modules'
+
+	"$NPM" prune
+}
+
+##### Bower #####
+
+# Install bower modules
+bower_install() {
+	print_title 'Installing bower modules'
+
+	"$BOWER" cache clean "${BOWER_COMMON_ARGS[@]}"
+	"$BOWER" install --force-latest "${BOWER_COMMON_ARGS[@]}"
+}
+
+#
+# Delete bower modules
+#
+bower_uninstall() {
+	print_title 'Removing bower modules'
+
+	rm -rf "$BOWER_MODULES_DIR"
+}
+
+#
+# Prune bower modules
+#
+bower_prune() {
+	print_title 'Pruning bower modules'
+
+	"$BOWER" prune "${BOWER_COMMON_ARGS[@]}"
+}
+
+########################################################
+###                    Call action                   ###
+########################################################
+
+case "$1" in
+    install|uninstall|prune)
+        "$1"
+    ;;
+    npm|bower)
+
+        if [[ $2 =~ ^(install|uninstall|prune)$ ]]; then
+            "$1_$2"
+        else
+            help
+        fi
+    ;;
+    *)
+        help
+    ;;
+esac
