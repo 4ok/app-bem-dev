@@ -23,7 +23,7 @@ Actions:
 
 # Project name
 if [[ -z $PROJECT_NAME ]]; then
-    PROJECT_NAME=PROJECT_NAME=$(jq -r '.name' package.json)
+    PROJECT_NAME=$(jq -r '.name' package.json)
 fi
 
 # Node directories
