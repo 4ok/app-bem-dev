@@ -48,7 +48,7 @@ STATIC_DIR='public/static'
 #
 # @1 {string} Title
 #
-print_title() {
+printTitle() {
     echo "===> $1"
 }
 
@@ -65,20 +65,20 @@ help() {
 
 # Assemble bem project
 make() {
-    remove_static_dir
+    removeStaticDir
 
 	# Create bem configs
-    print_title 'Creating bem configs'
+    printTitle 'Creating bem configs'
 
 	ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/borschik.json" "$PWD/$BEM_DIR/.borschik"
 
 	# Make enb
-    print_title 'Making enb'
+    printTitle 'Making enb'
 
 	"$ENB" make --no-cache --dir "$BEM_DIR"
 
 	# Freeze links
-    print_title 'Freezing links'
+    printTitle 'Freezing links'
 
 	ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/links.json" "$PWD/$BEM_DIR/links.tmp.json"
 
@@ -92,24 +92,24 @@ make() {
 }
 
 # Remove a static directory
-remove_static_dir() {
-	print_title 'Removing the static dir'
+removeStaticDir() {
+	printTitle 'Removing the static dir'
 
 	rm -rf "$STATIC_DIR"
 }
 
 # Clean
 clean() {
-    remove_static_dir
+    removeStaticDir
 
     # Remove bem configs
-	print_title 'Removing bem configs'
+	printTitle 'Removing bem configs'
 
 	rm -f "$BEM_DIR/.borschik" \
 	      "$BEM_DIR/links.json"
 
 	# Remove temporary files
-	print_title 'Removing temporary files'
+	printTitle 'Removing temporary files'
 
 	rm -rf "$BEM_DIR/.enb/tmp"
 }

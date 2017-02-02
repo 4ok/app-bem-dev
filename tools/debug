@@ -22,7 +22,9 @@ Usage:
 ########################################################
 
 # Project name
-PROJECT_NAME=$(jq -r '.name' 'package.json')
+if [[ -z $PROJECT_NAME ]]; then
+    PROJECT_NAME=PROJECT_NAME=$(jq -r '.name' package.json)
+fi
 
 # Process manager
 PROCESS_MANAGER='pm2'
@@ -36,7 +38,7 @@ PROCESS_MANAGER='pm2'
 #
 # @1 {string} Title
 #
-print_title() {
+printTitle() {
     echo "===> $1"
 }
 
@@ -55,7 +57,7 @@ help() {
 # Show the current process
 #
 process() {
-	print_title 'Application process'
+	printTitle 'Application process'
 
 	"$PROCESS_MANAGER" show "$PROJECT_NAME"
 }
@@ -64,7 +66,7 @@ process() {
 # Show logs
 #
 logs() {
-	print_title 'Application logs'
+	printTitle 'Application logs'
 
 	"$PROCESS_MANAGER" logs "$PROJECT_NAME"
 }

@@ -65,7 +65,7 @@ fi
 #
 # @1 {string} Title
 #
-print_title() {
+printTitle() {
     echo "===> $1"
 }
 
@@ -112,7 +112,7 @@ prune() {
 # Install npm modules
 #
 npm_install() {
-	print_title 'Installing npm modules'
+	printTitle 'Installing npm modules'
 
 	"$NPM" cache clean
 	"$NPM" install "--$NODE_ENV"
@@ -122,7 +122,7 @@ npm_install() {
 # Remove npm modules
 #
 npm_uninstall() {
-	print_title 'Removing npm modules'
+	printTitle 'Removing npm modules'
 
 	rm -rf "$NODE_MODULES_DIR"
 }
@@ -131,7 +131,7 @@ npm_uninstall() {
 # Prune npm modules
 #
 npm_prune() {
-	print_title 'Pruning npm modules'
+	printTitle 'Pruning npm modules'
 
 	"$NPM" prune
 }
@@ -140,7 +140,7 @@ npm_prune() {
 
 # Install bower modules
 bower_install() {
-	print_title 'Installing bower modules'
+	printTitle 'Installing bower modules'
 
 	"$BOWER" cache clean "${BOWER_COMMON_ARGS[@]}"
 	"$BOWER" install --force-latest "${BOWER_COMMON_ARGS[@]}"
@@ -150,7 +150,7 @@ bower_install() {
 # Delete bower modules
 #
 bower_uninstall() {
-	print_title 'Removing bower modules'
+	printTitle 'Removing bower modules'
 
 	rm -rf "$BOWER_MODULES_DIR"
 }
@@ -159,7 +159,7 @@ bower_uninstall() {
 # Prune bower modules
 #
 bower_prune() {
-	print_title 'Pruning bower modules'
+	printTitle 'Pruning bower modules'
 
 	"$BOWER" prune "${BOWER_COMMON_ARGS[@]}"
 }
