@@ -247,9 +247,9 @@ installModules() {
 	# Remove installation instructions files
 	printTitle 'Removing installation instructions files'
 
-	rm -rf package.json \
-	       bower.json \
-	       .bowerrc
+	rm -rf "$RELEASE_DIR/package.json" \
+	       "$RELEASE_DIR/bower.json" \
+	       "$RELEASE_DIR/.bowerrc"
 }
 ########################################################
 ###                      Actions                     ###
