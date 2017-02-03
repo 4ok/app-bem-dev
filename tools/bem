@@ -67,35 +67,35 @@ help() {
 make() {
     removeStaticDir
 
-	# Create bem configs
+    # Create bem configs
     printTitle 'Creating bem configs'
 
-	ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/borschik.json" "$PWD/$BEM_DIR/.borschik"
+    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/borschik.json" "$PWD/$BEM_DIR/.borschik"
 
-	# Make enb
+    # Make enb
     printTitle 'Making enb'
 
-	"$ENB" make --no-cache --dir "$BEM_DIR"
+    "$ENB" make --no-cache --dir "$BEM_DIR"
 
-	# Freeze links
+    # Freeze links
     printTitle 'Freezing links'
 
-	ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/links.json" "$PWD/$BEM_DIR/links.tmp.json"
+    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/links.json" "$PWD/$BEM_DIR/links.tmp.json"
 
-	"$BORSCHIK" \
-	    -t json \
-	    -i "$BEM_DIR/links.tmp.json" \
-	    -o "$BEM_DIR/links.json"
+    "$BORSCHIK" \
+        -t json \
+        -i "$BEM_DIR/links.tmp.json" \
+        -o "$BEM_DIR/links.json"
 
-	rm -f "$BEM_DIR/links.tmp.json" \
-	      "$BEM_DIR/.borschik"
+    rm -f "$BEM_DIR/links.tmp.json" \
+          "$BEM_DIR/.borschik"
 }
 
 # Remove a static directory
 removeStaticDir() {
-	printTitle 'Removing the static dir'
+    printTitle 'Removing the static dir'
 
-	rm -rf "$STATIC_DIR"
+    rm -rf "$STATIC_DIR"
 }
 
 # Clean
@@ -103,15 +103,15 @@ clean() {
     removeStaticDir
 
     # Remove bem configs
-	printTitle 'Removing bem configs'
+    printTitle 'Removing bem configs'
 
-	rm -f "$BEM_DIR/.borschik" \
-	      "$BEM_DIR/links.json"
+    rm -f "$BEM_DIR/.borschik" \
+          "$BEM_DIR/links.json"
 
-	# Remove temporary files
-	printTitle 'Removing temporary files'
+    # Remove temporary files
+    printTitle 'Removing temporary files'
 
-	rm -rf "$BEM_DIR/.enb/tmp"
+    rm -rf "$BEM_DIR/.enb/tmp"
 }
 
 ########################################################

@@ -112,56 +112,56 @@ prune() {
 # Install npm modules
 #
 npm_install() {
-	printTitle 'Installing npm modules'
+    printTitle 'Installing npm modules'
 
-	"$NPM" cache clean
-	"$NPM" install "--$NODE_ENV"
+    "$NPM" cache clean
+    "$NPM" install "--$NODE_ENV"
 }
 
 #
 # Remove npm modules
 #
 npm_uninstall() {
-	printTitle 'Removing npm modules'
+    printTitle 'Removing npm modules'
 
-	rm -rf "$NODE_MODULES_DIR"
+    rm -rf "$NODE_MODULES_DIR"
 }
 
 #
 # Prune npm modules
 #
 npm_prune() {
-	printTitle 'Pruning npm modules'
+    printTitle 'Pruning npm modules'
 
-	"$NPM" prune
+    "$NPM" prune
 }
 
 ##### Bower #####
 
 # Install bower modules
 bower_install() {
-	printTitle 'Installing bower modules'
+    printTitle 'Installing bower modules'
 
-	"$BOWER" cache clean "${BOWER_COMMON_ARGS[@]}"
-	"$BOWER" install --force-latest "${BOWER_COMMON_ARGS[@]}"
+    "$BOWER" cache clean "${BOWER_COMMON_ARGS[@]}"
+    "$BOWER" install --force-latest "${BOWER_COMMON_ARGS[@]}"
 }
 
 #
 # Delete bower modules
 #
 bower_uninstall() {
-	printTitle 'Removing bower modules'
+    printTitle 'Removing bower modules'
 
-	rm -rf "$BOWER_MODULES_DIR"
+    rm -rf "$BOWER_MODULES_DIR"
 }
 
 #
 # Prune bower modules
 #
 bower_prune() {
-	printTitle 'Pruning bower modules'
+    printTitle 'Pruning bower modules'
 
-	"$BOWER" prune "${BOWER_COMMON_ARGS[@]}"
+    "$BOWER" prune "${BOWER_COMMON_ARGS[@]}"
 }
 
 ########################################################

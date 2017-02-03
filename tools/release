@@ -116,9 +116,9 @@ printTitle() {
 # Create a release dir
 #
 createReleaseDir() {
-	printTitle 'Creating a release directory'
+    printTitle 'Creating a release directory'
 
-	mkdir "$RELEASE_DIR"
+    mkdir "$RELEASE_DIR"
 }
 
 #
@@ -127,46 +127,49 @@ createReleaseDir() {
 copyFiles() {
 
     # Copy bem files
-	printTitle 'Copying bem files'
+    printTitle 'Copying bem files'
 
-	mkdir -p "$RELEASE_DIR/$BUNDLE_DIR"
-	cp "$BUNDLE_DIR/$BUNDLE_FILENAME.bemtree.min.js" "$RELEASE_DIR/$BUNDLE_DIR"
-	cp "$BUNDLE_DIR/$BUNDLE_FILENAME.bemhtml.min.js" "$RELEASE_DIR/$BUNDLE_DIR"
+    mkdir -p "$RELEASE_DIR/$BUNDLE_DIR"
+    cp "$BUNDLE_DIR/$BUNDLE_FILENAME.bemtree.min.js" "$RELEASE_DIR/$BUNDLE_DIR"
+    cp "$BUNDLE_DIR/$BUNDLE_FILENAME.bemhtml.min.js" "$RELEASE_DIR/$BUNDLE_DIR"
 
-	cp "$BEM_LINKS_FILE" "$RELEASE_DIR/$BEM_LINKS_FILE"
+    cp "$BEM_LINKS_FILE" "$RELEASE_DIR/$BEM_LINKS_FILE"
 
-	# Copy application files
-	printTitle 'Copying application files'
+    # Copy application files
+    printTitle 'Copying application files'
 
-	cp index.js "$RELEASE_DIR"
+    cp index.js "$RELEASE_DIR"
 
-	cp -r routes "$RELEASE_DIR"
-	cp -r src "$RELEASE_DIR"
+    cp -r routes "$RELEASE_DIR"
+    cp -r src "$RELEASE_DIR"
 
-	mkdir -p "$RELEASE_DIR/$CONFIG_NODE_DIR"
-	cp "$CONFIG_NODE_DIR/default"*'.js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
-	cp "$CONFIG_NODE_DIR/$BUILD_ENV"*.'js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
+    # Copy configs files
+    printTitle 'Copying configs files'
 
-	# Copy not images files
-	printTitle 'Copying not images files'
+    mkdir -p "$RELEASE_DIR/$CONFIG_NODE_DIR"
+    cp "$CONFIG_NODE_DIR/default"*'.js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
+    cp "$CONFIG_NODE_DIR/$BUILD_ENV"*.'js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
 
-	find "$PUBLIC_DIR" -type f ! -name '.*' \
-	    | grep -Ev "/.+\.($OPTIMIZE_IMAGES_SUFFIXES)$" \
-	    | xargs -I '{}' rsync -R '{}' "$RELEASE_DIR"
+    # Copy not images files
+    printTitle 'Copying not images files'
+
+    find "$PUBLIC_DIR" -type f ! -name '.*' \
+        | grep -Ev "/.+\.($OPTIMIZE_IMAGES_SUFFIXES)$" \
+        | xargs -I '{}' rsync -R '{}' "$RELEASE_DIR"
 }
 
 #
 # Optimize and copy images
 #
 optimizeAndCopyImages() {
-	printTitle 'Optimizing and copying images'
+    printTitle 'Optimizing and copying images'
 
     printImagesList "$PUBLIC_DIR" \
         | tr ' ' '\n' \
-	    | sed -E 's|/[^/]+$$|/|' \
-	    | uniq \
-	    | xargs -P "$OPTIMIZE_IMAGES_NUM_THREADS" -I '{}' \
-	    "$IMAGEMIN" '{}/*' \
+        | sed -E 's|/[^/]+$$|/|' \
+        | uniq \
+        | xargs -P "$OPTIMIZE_IMAGES_NUM_THREADS" -I '{}' \
+        "$IMAGEMIN" '{}/*' \
             --plugin mozjpeg \
             --plugin pngquant \
             --plugin gifsicle \
@@ -222,34 +225,34 @@ printSizeInMb() {
 # Gzip texts files
 #
 gzipTextsFiles() {
-	$(call printActionTitle,Gziping texts files)
+    $(call printActionTitle,Gziping texts files)
 
-	find $(RELEASE_DIR)/$(PUBLIC_DIR) \
-	    | grep -E '\.($(COMPRESS_FILES_SUFFIXES))' \
-	    | xargs -P $(GZIP_FILES_NUM_THREADS) gzip -kv"$GZIP"
+    find $(RELEASE_DIR)/$(PUBLIC_DIR) \
+        | grep -E '\.($(COMPRESS_FILES_SUFFIXES))' \
+        | xargs -P $(GZIP_FILES_NUM_THREADS) gzip -kv"$GZIP"
 }
 
 installModules() {
 
     # Copy installation instructions files
-	printTitle 'Copying installation instructions files'
+    printTitle 'Copying installation instructions files'
 
-	cp package.json "$RELEASE_DIR"
-	cp bower.json "$RELEASE_DIR"
-	cp .bowerrc "$RELEASE_DIR"
+    cp package.json "$RELEASE_DIR"
+    cp bower.json "$RELEASE_DIR"
+    cp .bowerrc "$RELEASE_DIR"
 
     # Installation production modules
-	printTitle 'Installing production modules'
-	cd "$RELEASE_DIR"
-	"$NPM" install "--$BUILD_ENV"
-	cd -
+    printTitle 'Installing production modules'
+    cd "$RELEASE_DIR"
+    "$NPM" install "--$BUILD_ENV"
+    cd -
 
-	# Remove installation instructions files
-	printTitle 'Removing installation instructions files'
+    # Remove installation instructions files
+    printTitle 'Removing installation instructions files'
 
-	rm -rf "$RELEASE_DIR/package.json" \
-	       "$RELEASE_DIR/bower.json" \
-	       "$RELEASE_DIR/.bowerrc"
+    rm -rf "$RELEASE_DIR/package.json" \
+           "$RELEASE_DIR/bower.json" \
+           "$RELEASE_DIR/.bowerrc"
 }
 ########################################################
 ###                      Actions                     ###

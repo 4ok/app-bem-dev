@@ -57,18 +57,18 @@ help() {
 # Show the current process
 #
 process() {
-	printTitle 'Application process'
+    printTitle 'Application process'
 
-	"$PROCESS_MANAGER" show "$PROJECT_NAME"
+    "$PROCESS_MANAGER" show "$PROJECT_NAME"
 }
 
 #
 # Show logs
 #
 logs() {
-	printTitle 'Application logs'
+    printTitle 'Application logs'
 
-	"$PROCESS_MANAGER" logs "$PROJECT_NAME"
+    "$PROCESS_MANAGER" logs "$PROJECT_NAME"
 }
 
 
