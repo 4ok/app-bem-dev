@@ -5,16 +5,20 @@
 ########################################################
 
 HELP='
-BEM actions
+BEM actions.
 
 Usage:
 
-    bem [action]
+    bem action
 
- Actions:
+Parameters:
 
-    make   Assemble bem bundles
-    clean  Clean assembled files
+    * action
+
+        BEM actions.
+
+        - make   Assemble bem bundles.
+        - clean  Clean assembled files.
 '
 
 ########################################################

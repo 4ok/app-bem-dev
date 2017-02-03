@@ -12,22 +12,22 @@ Usage:
     module [module_type] action [dir]
     module action
 
- Parameters:
+Parameters:
 
     * module_type
 
         Modules type.
 
-        - npm     npm modules
-        - bower   bower modules
+        - npm     npm modules.
+        - bower   bower modules.
 
     * action
 
         Modules action.
 
-        - install          Install modules
-        - uninstall        Uninstall modules
-        - prune            Prune modules
+        - install          Install modules.
+        - uninstall        Uninstall modules.
+        - prune            Prune modules.
 
     * dir
 
@@ -176,8 +176,6 @@ bower_prune() {
 ########################################################
 ###                    Call action                   ###
 ########################################################
-
-
 
 case "$1" in
     install|uninstall|prune)

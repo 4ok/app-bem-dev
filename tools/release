@@ -5,16 +5,20 @@
 ########################################################
 
 HELP='
-Release actions
+Release actions.
 
 Usage:
 
     release [action]
 
-Actions:
+Parameters:
 
-    create   Create a release build
-    remove   Remove a release build
+    * action
+
+        Release action.
+
+        - create   Create a release build.
+        - remove   Remove a release build.
 '
 
 ########################################################
@@ -254,6 +258,7 @@ installModules() {
            "$RELEASE_DIR/bower.json" \
            "$RELEASE_DIR/.bowerrc"
 }
+
 ########################################################
 ###                      Actions                     ###
 ########################################################

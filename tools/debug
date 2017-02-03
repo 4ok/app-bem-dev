@@ -5,16 +5,20 @@
 ########################################################
 
 HELP='
-Debug actions
+Debug actions.
 
 Usage:
 
-    debug [action]
+    debug action
 
- Actions:
+Parameters:
 
-    process     Show the application process
-    logs        Show application logs
+    * action
+
+        Debug action.
+
+        - process     Show the application process.
+        - logs        Show application logs.
 '
 
 ########################################################
