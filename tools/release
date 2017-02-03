@@ -241,7 +241,7 @@ installModules() {
     # Installation production modules
 	printTitle 'Installing production modules'
 	cd "$RELEASE_DIR"
-	"$NPM" install
+	"$NPM" install "--$BUILD_ENV"
 	cd -
 
 	# Remove installation instructions files
