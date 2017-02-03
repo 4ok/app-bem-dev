@@ -157,3 +157,14 @@ bem:
 .PHONY: clean
 clean:
 	$(BEM_TOOL) clean
+
+########################################################
+###                    Other rules                   ###
+########################################################
+
+# Finalization project
+.PHONY: final
+final:
+	$(APP_TOOL) stop
+	$(BEM_TOOL) clean
+	$(MODULE_TOOL) uninstall
