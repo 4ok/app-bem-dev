@@ -153,24 +153,6 @@ copyFiles() {
 	find "$PUBLIC_DIR" -type f ! -name '.*' \
 	    | grep -Ev "/.+\.($OPTIMIZE_IMAGES_SUFFIXES)$" \
 	    | xargs -I '{}' rsync -R '{}' "$RELEASE_DIR"
-
-    # Copy installation instructions files
-	printTitle 'Copying installation instructions files'
-
-	cp package.json "$RELEASE_DIR"
-	cp bower.json "$RELEASE_DIR"
-	cp .bowerrc "$RELEASE_DIR"
-
-    # Installation production modules
-	printTitle 'Installation production modules'
-	"$NPM" install --prefix "$RELEASE_DIR"
-
-	# Remove installation instructions files
-	printTitle 'Removing installation instructions files'
-
-	rm -rf package.json \
-	       bower.json \
-	       .bowerrc
 }
 
 #
@@ -247,6 +229,28 @@ gzipTextsFiles() {
 	    | xargs -P $(GZIP_FILES_NUM_THREADS) gzip -kv"$GZIP"
 }
 
+installModules() {
+
+    # Copy installation instructions files
+	printTitle 'Copying installation instructions files'
+
+	cp package.json "$RELEASE_DIR"
+	cp bower.json "$RELEASE_DIR"
+	cp .bowerrc "$RELEASE_DIR"
+
+    # Installation production modules
+	printTitle 'Installing production modules'
+	cd "$RELEASE_DIR"
+	"$NPM" install
+	cd -
+
+	# Remove installation instructions files
+	printTitle 'Removing installation instructions files'
+
+	rm -rf package.json \
+	       bower.json \
+	       .bowerrc
+}
 ########################################################
 ###                      Actions                     ###
 ########################################################
@@ -267,6 +271,7 @@ create() {
     copyFiles
     optimizeAndCopyImages
     printOptimizeImagesResult
+    installModules
 }
 
 #
