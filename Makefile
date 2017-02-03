@@ -123,7 +123,7 @@ restart:
 # Start or restart the application
 .PHONY: startOrRestart
 startOrRestart:
-	$(APP_TOOL) start_or_restart
+	$(APP_TOOL) startOrRestart
 
 # Stop the application
 .PHONY: stop
