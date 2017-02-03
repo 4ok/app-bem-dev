@@ -26,6 +26,12 @@ if [[ -z $PROJECT_NAME ]]; then
     PROJECT_NAME=$(jq -r '.name' package.json)
 fi
 
+# Developers tools directory
+DEV_TOOLS_DIR=$(dirname "$0")
+
+# Module tool
+MODULE_TOOL="$DEV_TOOLS_DIR/module"
+
 # Node directories
 NODE_BIN_DIR=(
     '/usr/bin'
@@ -143,9 +149,6 @@ copyFiles() {
     cp -r routes "$RELEASE_DIR"
     cp -r src "$RELEASE_DIR"
 
-    # Copy configs files
-    printTitle 'Copying configs files'
-
     mkdir -p "$RELEASE_DIR/$CONFIG_NODE_DIR"
     cp "$CONFIG_NODE_DIR/default"*'.js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
     cp "$CONFIG_NODE_DIR/$BUILD_ENV"*.'js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
@@ -242,10 +245,7 @@ installModules() {
     cp .bowerrc "$RELEASE_DIR"
 
     # Installation production modules
-    printTitle 'Installing production modules'
-    cd "$RELEASE_DIR"
-    "$NPM" install "--$BUILD_ENV"
-    cd -
+    "$MODULE_TOOL" install "$RELEASE_DIR"
 
     # Remove installation instructions files
     printTitle 'Removing installation instructions files'

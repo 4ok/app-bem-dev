@@ -5,24 +5,33 @@
 ########################################################
 
 HELP='
-Modules actions
+Modules actions.
 
 Usage:
 
-    module [action]
+    module [module_type] action [dir]
+    module action
 
- Actions:
+ Parameters:
 
-    install          Install npm and bower modules
-    uninstall        Uninstall npm and bower modules
+    * module_type
 
-    npm.install      Install npm modules
-    npm.uninstall    Remove npm modules
-    npm.prune        Prune npm modules
+        Modules type.
 
-    bower.install    Install bower modules
-    bower.uninstall  Remove bower modules
-    bower.prune      Prune bower modules
+        - npm     npm modules
+        - bower   bower modules
+
+    * action
+
+        Modules action.
+
+        - install          Install modules
+        - uninstall        Uninstall modules
+        - prune            Prune modules
+
+    * dir
+
+        Directory for action.
 '
 
 ########################################################
@@ -168,14 +177,30 @@ bower_prune() {
 ###                    Call action                   ###
 ########################################################
 
+
+
 case "$1" in
     install|uninstall|prune)
-        "$1"
+        funcName="$1"
+        dir="$2"
+
+        if [[ -n "$dir" ]]; then
+            cd "$dir" && "$funcName"
+        else
+            "$funcName"
+        fi
     ;;
     npm|bower)
 
         if [[ $2 =~ ^(install|uninstall|prune)$ ]]; then
-            "$1_$2"
+            funcName="$1_$2"
+            dir="$3"
+
+            if [[ -n "$dir" ]]; then
+                cd "$dir" && "$funcName"
+            else
+                "$funcName"
+            fi
         else
             help
         fi
