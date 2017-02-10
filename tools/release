@@ -78,6 +78,9 @@ PUBLIC_DIR='public'
 # Release directory
 RELEASE_DIR="release"
 
+# Release archive
+RELEASE_ARCHIVE="$RELEASE_DIR.tgz"
+
 # Files suffixes for compress
 COMPRESS_FILES_SUFFIXES='css|js|eot|svg|ttf|woff|pdf|xml|txt'
 
@@ -259,6 +262,13 @@ installModules() {
            "$RELEASE_DIR/.bowerrc"
 }
 
+createArchive() {
+
+    # Create a release archive
+    printTitle 'Creating a release archive'
+    tar -czf "$RELEASE_ARCHIVE" "$RELEASE_DIR"
+}
+
 ########################################################
 ###                      Actions                     ###
 ########################################################
@@ -280,6 +290,7 @@ create() {
     optimizeAndCopyImages
     printOptimizeImagesResult
     installModules
+    createArchive
 }
 
 #
@@ -288,7 +299,7 @@ create() {
 remove() {
     printTitle 'Removing a release directory'
 
-    rm -rf "$RELEASE_DIR"
+    rm -rf "$RELEASE_DIR" "$RELEASE_ARCHIVE"
 }
 
 ########################################################
