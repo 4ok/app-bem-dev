@@ -257,7 +257,7 @@ installModules() {
     # Remove installation instructions files
     printTitle 'Removing installation instructions files'
 
-    rm -rf "$RELEASE_DIR/package.json" \
+    rm -f "$RELEASE_DIR/package.json" \
            "$RELEASE_DIR/bower.json" \
            "$RELEASE_DIR/.bowerrc"
 }
@@ -289,6 +289,7 @@ create() {
     copyFiles
     optimizeAndCopyImages
     printOptimizeImagesResult
+    gzipTextsFiles
     installModules
     createArchive
 }
