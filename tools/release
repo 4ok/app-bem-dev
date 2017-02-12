@@ -235,11 +235,11 @@ printSizeInMb() {
 # Gzip texts files
 #
 gzipTextsFiles() {
-    $(call printActionTitle,Gziping texts files)
+    printTitle 'Gziping texts files'
 
-    find $(RELEASE_DIR)/$(PUBLIC_DIR) \
-        | grep -E '\.($(COMPRESS_FILES_SUFFIXES))' \
-        | xargs -P $(GZIP_FILES_NUM_THREADS) gzip -kv"$GZIP"
+    find "$RELEASE_DIR/$PUBLIC_DIR" \
+        | grep -E "\.($COMPRESS_FILES_SUFFIXES)" \
+        | xargs -P "$GZIP_FILES_NUM_THREADS" gzip -kv "$GZIP"
 }
 
 installModules() {
