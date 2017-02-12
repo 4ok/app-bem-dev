@@ -109,9 +109,6 @@ GZIP_FILES_NUM_THREADS="$DEFAULT_NUM_THREADS"
 # Gzip compress level
 export GZIP=-9
 
-# Enb make is minify files
-export ENB_IS_MINIFY=1
-
 ########################################################
 ###                      Helpers                     ###
 ########################################################
