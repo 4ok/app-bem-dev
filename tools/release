@@ -252,7 +252,7 @@ installModules() {
     # Remove installation instructions files
     printTitle 'Removing installation instructions files'
 
-    rm -f "$RELEASE_DIR/package.json" \
+    rm -f "$RELEASE_DIR/package.json"
 }
 
 createArchive() {
