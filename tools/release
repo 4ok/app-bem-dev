@@ -245,8 +245,6 @@ installModules() {
     printTitle 'Copying installation instructions files'
 
     cp package.json "$RELEASE_DIR"
-    cp bower.json "$RELEASE_DIR"
-    cp .bowerrc "$RELEASE_DIR"
 
     # Installation production modules
     "$MODULE_TOOL" install "$RELEASE_DIR"
@@ -255,8 +253,6 @@ installModules() {
     printTitle 'Removing installation instructions files'
 
     rm -f "$RELEASE_DIR/package.json" \
-           "$RELEASE_DIR/bower.json" \
-           "$RELEASE_DIR/.bowerrc"
 }
 
 createArchive() {
