@@ -152,6 +152,7 @@ copyFiles() {
 
     cp -r routes "$RELEASE_DIR"
     cp -r src "$RELEASE_DIR"
+    cp -r data "$RELEASE_DIR" 2>/dev/null
 
     mkdir -p "$RELEASE_DIR/$CONFIG_NODE_DIR"
     cp "$CONFIG_NODE_DIR/default"*'.js' "$RELEASE_DIR/$CONFIG_NODE_DIR"
