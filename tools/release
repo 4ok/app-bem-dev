@@ -90,7 +90,7 @@ OPTIMIZE_IMAGES_SUFFIXES='jpg|jpeg|png|gif|svg'
 # Images suffixes for optimize
 OPTIMIZE_IMAGES='jpg jpeg png gif svg'
 
-# Build environment
+# Build environment !!! todo
 BUILD_ENV='production'
 
 # Default number of threads
@@ -248,7 +248,7 @@ installModules() {
     cp package.json "$RELEASE_DIR"
 
     # Installation production modules
-    "$MODULE_TOOL" install "$RELEASE_DIR"
+    NODE_ENV="$BUILD_ENV" "$MODULE_TOOL" install "$RELEASE_DIR"
 
     # Remove installation instructions files
     printTitle 'Removing installation instructions files'
