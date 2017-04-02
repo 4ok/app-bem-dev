@@ -53,8 +53,8 @@ BEM_TOOL := $(DEV_TOOLS)/bem
 # Debug tool
 DEBUG_TOOL := $(DEV_TOOLS)/debug
 
-# Release tool
-RELEASE_TOOL := $(DEV_TOOLS)/release
+# Build tool
+BUILD_TOOL := $(DEV_TOOLS)/build
 
 ########################################################
 ###                Installation rules                ###
@@ -169,6 +169,6 @@ clean:
 .PHONY: final
 final:
 	$(APP_TOOL) stop
-	$(RELEASE_TOOL) remove
+	$(BUILD_TOOL) remove
 	$(BEM_TOOL) clean
 	$(MODULE_TOOL) uninstall
