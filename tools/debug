@@ -5,7 +5,7 @@
 ########################################################
 
 HELP='
-Debug actions.
+Debug.
 
 Usage:
 
@@ -27,7 +27,8 @@ Parameters:
 
 # Project name
 if [[ -z $PROJECT_NAME ]]; then
-    PROJECT_NAME=$(jq -r '.name' package.json)
+    echo 'Error: Set the "PROJECT_NAME" variable'
+    exit 1
 fi
 
 # Process manager

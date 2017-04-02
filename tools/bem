@@ -5,7 +5,7 @@
 ########################################################
 
 HELP='
-BEM actions.
+BEM.
 
 Usage:
 
@@ -31,17 +31,11 @@ NODE_MODULES_DIR='node_modules'
 # Node modules binary directory
 NODE_MODULES_BIN_DIR="$NODE_MODULES_DIR/.bin"
 
-# Enb
-ENB="$NODE_MODULES_BIN_DIR/enb"
-
 # Borschik
 BORSCHIK="$NODE_MODULES_BIN_DIR/borschik"
 
 # Bem directory
-BEM_DIR='bem'
-
-# Static directory
-STATIC_DIR='public/static'
+BEM_RELATIVE_DIR='bem'
 
 ########################################################
 ###                      Helpers                     ###
@@ -71,51 +65,46 @@ help() {
 make() {
     removeStaticDir
 
-    # Create bem configs
     printTitle 'Creating bem configs'
 
-    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/borschik.json" "$PWD/$BEM_DIR/.borschik"
+    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/borschik.json" "$PWD/$BEM_RELATIVE_DIR/.borschik"
 
-    # Make enb
     printTitle 'Making enb'
 
-    "$ENB" make --no-cache --dir "$BEM_DIR"
+    "$NODE_MODULES_BIN_DIR/enb" make --no-cache --dir "$BEM_RELATIVE_DIR"
 
-    # Freeze links
     printTitle 'Freezing links'
 
-    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/links.json" "$PWD/$BEM_DIR/links.tmp.json"
+    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/links.json" "$PWD/$BEM_RELATIVE_DIR/links.tmp.json"
 
     "$BORSCHIK" \
         -t json \
-        -i "$BEM_DIR/links.tmp.json" \
-        -o "$BEM_DIR/links.json"
+        -i "$BEM_RELATIVE_DIR/links.tmp.json" \
+        -o "$BEM_RELATIVE_DIR/links.json"
 
-    rm -f "$BEM_DIR/links.tmp.json" \
-          "$BEM_DIR/.borschik"
+    rm -f "$BEM_RELATIVE_DIR/links.tmp.json" \
+          "$BEM_RELATIVE_DIR/.borschik"
 }
 
 # Remove a static directory
 removeStaticDir() {
     printTitle 'Removing the static dir'
 
-    rm -rf "$STATIC_DIR"
+    rm -rf 'public/static'
 }
 
 # Clean
 clean() {
     removeStaticDir
 
-    # Remove bem configs
     printTitle 'Removing bem configs'
 
-    rm -f "$BEM_DIR/.borschik" \
-          "$BEM_DIR/links.json"
+    rm -f "$BEM_RELATIVE_DIR/.borschik" \
+          "$BEM_RELATIVE_DIR/links.json"
 
-    # Remove temporary files
     printTitle 'Removing temporary files'
 
-    rm -rf "$BEM_DIR/.enb/tmp"
+    rm -rf "$BEM_RELATIVE_DIR/.enb/tmp"
 }
 
 ########################################################
