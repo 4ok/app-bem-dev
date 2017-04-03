@@ -94,7 +94,7 @@ release() {
 
     scp "$buildArchive" "$REMOTE_USER@$REMOTE_HOST:$remoteBuildDir/"
 
-    printTitle 'Deploing release'
+    printTitle 'Deploying release'
 
     ssh "$REMOTE_USER@$REMOTE_HOST" << REMOTE
 
