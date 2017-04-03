@@ -225,7 +225,7 @@ installModules() {
     cp package.json "$BUILD_RELATIVE_DIR"
 
     # Installation production modules
-    NODE_ENV="$NODE_ENV" "$TOOLS_DIR/module" install "$BUILD_RELATIVE_DIR"
+    "$TOOLS_DIR/module" install "$BUILD_RELATIVE_DIR"
 
     printTitle 'Removing installation instructions files'
 

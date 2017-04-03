@@ -120,7 +120,7 @@ prune() {
 npm_install() {
 
     if [[ -n package.json ]]; then
-        printTitle 'Installing npm modules ('"$NODE_ENV"')'
+        printTitle "Installing npm modules (Env: $NODE_ENV)"
 
         "$NPM" cache clean
         "$NPM" install "--$NODE_ENV"
