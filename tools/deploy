@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+
+########################################################
+###                        Help                      ###
+########################################################
+
+HELP='
+Deploy.
+
+Usage:
+
+    deploy [action]
+
+Parameters:
+
+    * action
+
+        Deploy config actions.
+
+        - project  Deploy a project.
+        - nginx    Deploy a nginx config.
+'
+
+########################################################
+###                     Variables                    ###
+########################################################
+
+# Project name
+if [[ -z $PROJECT_NAME ]]; then
+    echo 'Error: Set the "PROJECT_NAME" variable'
+    exit 1
+fi
+
+# Remote host
+if [[ -z $REMOTE_HOST ]]; then
+    echo 'Error: Set the "REMOTE_HOST" variable'
+    exit 1
+fi
+
+# Remote user
+if [[ -z $REMOTE_USER ]]; then
+    echo 'Error: Set the "REMOTE_USER" variable'
+    exit 1
+fi
+
+# Build number
+if [[ -z $BUILD_NUMBER ]]; then
+    echo 'Error: Set the "BUILD_NUMBER" variable'
+    exit 1
+fi
+
+# Build generation
+if [[ -z $BUILD_GENERATION ]]; then
+    BUILD_GENERATION='0.0'
+fi
+
+########################################################
+###                      Helpers                     ###
+########################################################
+
+#
+# Print a title of action
+#
+# @1 {string} Title
+#
+printTitle() {
+    echo "===> $1"
+}
+
+########################################################
+###                     Actions                      ###
+########################################################
+
+#
+# Help
+#
+help() {
+    echo "$HELP"
+}
+
+#
+# Start the application
+#
+nginx() {
+    local nginxDir='/etc/nginx'
+
+    printTitle 'Deploy a nginx config'
+
+    ln -sfn \
+        "$nginxDir"/sites-available/"$PROJECT_NAME" \
+        "$nginxDir"/sites-enabled/"$PROJECT_NAME"
+}
+
+project() {
+    local buildName='release'
+    local buildArchive="$buildName.tgz"
+    local remoteBuildName="$BUILD_GENERATION.$BUILD_NUMBER"
+    local remoteWwwDir='/var/www'
+    local remoteBuildDir="$remoteWwwDir/releases/$PROJECT_NAME"
+    local remoteProjectsDir="$remoteWwwDir/projects"
+
+    printTitle 'Uploading build archive'
+
+    scp "$buildArchive" "$REMOTE_USER@$REMOTE_HOST:$remoteBuildDir/"
+
+    printTitle 'Deploing release'
+
+    ssh "$REMOTE_USER@$REMOTE_HOST" << REMOTE
+
+        if [[ -n $remoteProjectsDir ]]; then
+            mkdir -p "$remoteProjectsDir"
+        fi
+
+        echo "===> Extracting a build archive"
+
+        cd "$remoteBuildDir"
+        tar -xzf "$buildArchive" --transform s/"$buildName/$remoteBuildName/" >/dev/null 2>&1
+        rm -f "$buildArchive"
+
+        echo '===> Creating a project symlink'
+
+        ln -sfn "$remoteBuildDir/$remoteBuildName" "$remoteProjectsDir/$PROJECT_NAME"
+REMOTE
+}
+
+all() {
+    project
+}
+
+########################################################
+###                    Call action                   ###
+########################################################
+
+case "$1" in
+    all|project|nginx)
+        "$1"
+    ;;
+    *)
+        help
+    ;;
+esac
