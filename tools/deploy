@@ -49,7 +49,7 @@ if [[ -z $REMOTE_BUILD_DIR ]]; then
 fi
 
 # Remote project directory
-if [[ -z $$REMOTE_PROJECT_DIR ]]; then
+if [[ -z $REMOTE_PROJECT_DIR ]]; then
     echo 'Error: set the "$REMOTE_PROJECT_DIR" variable'
     exit 1
 fi
