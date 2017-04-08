@@ -133,7 +133,7 @@ release() {
 
         if [[ -d $remoteProjectNginxIncludesDir ]]; then
             mkdir -p "$nginxSitesIncludeProjectDir"
-            cp "$remoteProjectNginxIncludesDir/*" "$nginxSitesIncludeProjectDir"
+            cp "$remoteProjectNginxIncludesDir"/* "$nginxSitesIncludeProjectDir"
         fi
 REMOTE
 }
