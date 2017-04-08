@@ -100,7 +100,7 @@ release() {
 
     ssh "$REMOTE_USER@$REMOTE_HOST" << REMOTE
 
-        if [[ -n $remoteProjectsDir ]]; then
+        if [[ ! -d $remoteProjectsDir ]]; then
             mkdir -p "$remoteProjectsDir"
         fi
 
@@ -119,7 +119,7 @@ release() {
         rm "$nginxSitesAvailableDir/nginx.conf"
         cp "$remoteProjectNginxDir/nginx.conf" "$nginxSitesAvailableDir"
 
-        if [[ -n $remoteProjectNginxIncludesDir ]]; then
+        if [[ -d $remoteProjectNginxIncludesDir ]]; then
             rm -rf "$nginxSitesIncludeDir"
             mkdir "$nginxSitesIncludeDir"
             cp -f "$remoteProjectNginxIncludesDir/*" "$nginxSitesIncludeDir"

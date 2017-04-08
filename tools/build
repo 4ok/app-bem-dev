@@ -251,7 +251,7 @@ createNginxConfig() {
         "$configNginxDir"/default-vars.js \
         > "$releaseConfigNginxDir"/nginx.conf
 
-    if [[ -n $configNginxIncludesDir ]]; then
+    if [[ -d $configNginxIncludesDir ]]; then
         printTitle 'Copying nginx includes'
 
         mkdir -p "$releaseConfigNginxIncludesDir"
