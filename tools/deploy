@@ -134,6 +134,7 @@ release() {
             mkdir -p "$nginxSitesIncludeDir"
             cp -f "$remoteProjectNginxIncludesDir/*" "$nginxSitesIncludeDir"
         fi
+REMOTE
 }
 
 ########################################################
