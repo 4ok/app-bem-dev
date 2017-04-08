@@ -124,6 +124,8 @@ npm_install() {
 
         "$NPM" cache clean
         "$NPM" install "--$NODE_ENV"
+
+        npm_prune
     fi
 }
 
