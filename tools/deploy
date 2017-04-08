@@ -99,7 +99,7 @@ release() {
 
     local nginxDir='/etc/nginx'
     local nginxSitesAvailableConf="$nginxDir/sites-available/$PROJECT_NAME.conf"
-    local nginxSitesIncludeDir="$nginxDir/sites-include/$PROJECT_NAME"
+    local nginxSitesIncludeProjectDir="$nginxDir/sites-include/$PROJECT_NAME"
 
     printTitle 'Uploading build archive'
 
@@ -122,17 +122,18 @@ release() {
 
         echo '===> Deploy a nginx config'
 
-        rm "$nginxSitesAvailableConf"
+        rm -f "$nginxSitesAvailableConf"
         cp "$remoteProjectNginxDir/nginx.conf" "$nginxSitesAvailableConf"
 
         ln -fn \
             "$nginxSitesAvailableConf" \
             "$nginxDir/sites-enabled/$PROJECT_NAME.conf"
 
+        rm -rf "$nginxSitesIncludeProjectDir"
+
         if [[ -d $remoteProjectNginxIncludesDir ]]; then
-            rm -rf "$nginxSitesIncludeDir"
-            mkdir -p "$nginxSitesIncludeDir"
-            cp -f "$remoteProjectNginxIncludesDir/*" "$nginxSitesIncludeDir"
+            mkdir -p "$nginxSitesIncludeProjectDir"
+            cp "$remoteProjectNginxIncludesDir/*" "$nginxSitesIncludeProjectDir"
         fi
 REMOTE
 }
