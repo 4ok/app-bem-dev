@@ -85,14 +85,16 @@ release() {
     local remoteBuildDir="$remoteWwwDir/releases/$PROJECT_NAME"
     local remoteProjectsDir="$remoteWwwDir/projects"
     local remoteProjectDir="$remoteProjectsDir/$PROJECT_NAME"
+    local remoteProjectNginxDir="$remoteProjectDir/configs/nginx"
+    local remoteProjectNginxIncludesDir="$remoteProjectNginxDir/includes"
 
     local nginxDir='/etc/nginx'
-    local nginxSitesAvailable="$nginxDir/sites-available"
-    local nginxSitesAvailableProject="$nginxSitesAvailable/$PROJECT_NAME"
+    local nginxSitesAvailableDir="$nginxDir/sites-available"
+    local nginxSitesIncludeDir="$nginxDir/sites-include/$PROJECT_NAME"
 
     printTitle 'Uploading build archive'
 
-    scp "$buildArchive" "$REMOTE_USER@$REMOTE_HOST:$remoteBuildDir/"
+    scp "$buildArchive" "$REMOTE_USER@$REMOTE_HOST:$remoteBuildDir"
 
     printTitle 'Deploying release'
 
@@ -114,10 +116,16 @@ release() {
 
         echo '===> Deploy a nginx config'
 
-        cp -f "$remoteProjectDir/configs/nginx/nginx.conf" "$nginxSitesAvailableProject"
+        cp -f "$remoteProjectNginxDir/nginx.conf" "$nginxSitesAvailableDir"
+
+        if [[ -n $remoteProjectNginxIncludesDir ]]; then
+            rm -rf "$nginxSitesIncludeDir"
+            mkdir "$nginxSitesIncludeDir"
+            cp -f "$remoteProjectNginxIncludesDir/*" "$nginxSitesIncludeDir"
+        fi
 
         ln -sfn \
-            "$nginxSitesAvailableProject" \
+            "$nginxSitesAvailableDir" \
             "$nginxDir"/sites-enabled/"$PROJECT_NAME"
 REMOTE
 }
