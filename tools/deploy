@@ -26,25 +26,37 @@ Parameters:
 
 # Project name
 if [[ -z $PROJECT_NAME ]]; then
-    echo 'Error: Set the "PROJECT_NAME" variable'
+    echo 'Error: set the "PROJECT_NAME" variable'
     exit 1
 fi
 
 # Remote host
 if [[ -z $REMOTE_HOST ]]; then
-    echo 'Error: Set the "REMOTE_HOST" variable'
+    echo 'Error: set the "REMOTE_HOST" variable'
     exit 1
 fi
 
 # Remote user
 if [[ -z $REMOTE_USER ]]; then
-    echo 'Error: Set the "REMOTE_USER" variable'
+    echo 'Error: set the "REMOTE_USER" variable'
+    exit 1
+fi
+
+# Remote build directory
+if [[ -z $REMOTE_BUILD_DIR ]]; then
+    echo 'Error: set the "REMOTE_BUILD_DIR" variable'
+    exit 1
+fi
+
+# Remote project directory
+if [[ -z $$REMOTE_PROJECT_DIR ]]; then
+    echo 'Error: set the "$REMOTE_PROJECT_DIR" variable'
     exit 1
 fi
 
 # Build number
 if [[ -z $BUILD_NUMBER ]]; then
-    echo 'Error: Set the "BUILD_NUMBER" variable'
+    echo 'Error: set the "BUILD_NUMBER" variable'
     exit 1
 fi
 
@@ -81,11 +93,7 @@ release() {
     local buildName='release'
     local buildArchive="$buildName.tgz"
     local remoteBuildName="$BUILD_GENERATION.$BUILD_NUMBER"
-    local remoteWwwDir='/var/www'
-    local remoteBuildDir="$remoteWwwDir/releases/$PROJECT_NAME"
-    local remoteProjectsDir="$remoteWwwDir/projects"
-    local remoteProjectDir="$remoteProjectsDir/$PROJECT_NAME"
-    local remoteProjectNginxDir="$remoteProjectDir/configs/nginx"
+    local remoteProjectNginxDir="$REMOTE_PROJECT_DIR/configs/nginx"
     local remoteProjectNginxIncludesDir="$remoteProjectNginxDir/includes"
 
     local nginxDir='/etc/nginx'
@@ -94,25 +102,22 @@ release() {
 
     printTitle 'Uploading build archive'
 
-    scp "$buildArchive" "$REMOTE_USER@$REMOTE_HOST:$remoteBuildDir"
+    scp "$buildArchive" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_BUILD_DIR"
 
     printTitle 'Deploying release'
 
     ssh "$REMOTE_USER@$REMOTE_HOST" << REMOTE
 
-        if [[ ! -d $remoteProjectsDir ]]; then
-            mkdir -p "$remoteProjectsDir"
-        fi
-
         echo '===> Extracting a build archive'
 
-        cd "$remoteBuildDir"
+        cd "$REMOTE_BUILD_DIR"
         tar -xzf "$buildArchive" --transform s/"$buildName/$remoteBuildName/" >/dev/null 2>&1
         rm -f "$buildArchive"
 
         echo '===> Creating a build symlink to the project'
 
-        ln -sfn "$remoteBuildDir/$remoteBuildName" "$remoteProjectDir"
+        mkdir -p $(dirname "$REMOTE_PROJECT_DIR")
+        ln -sfn "$REMOTE_BUILD_DIR/$remoteBuildName" "$REMOTE_PROJECT_DIR"
 
         echo '===> Deploy a nginx config'
 
@@ -121,7 +126,7 @@ release() {
 
         if [[ -d $remoteProjectNginxIncludesDir ]]; then
             rm -rf "$nginxSitesIncludeDir"
-            mkdir "$nginxSitesIncludeDir"
+            mkdir -p "$nginxSitesIncludeDir"
             cp -f "$remoteProjectNginxIncludesDir/*" "$nginxSitesIncludeDir"
         fi
 
