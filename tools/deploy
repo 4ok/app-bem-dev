@@ -116,7 +116,8 @@ release() {
 
         echo '===> Deploy a nginx config'
 
-        cp -f "$remoteProjectNginxDir/nginx.conf" "$nginxSitesAvailableDir"
+        rm "$nginxSitesAvailableDir/nginx.conf"
+        cp "$remoteProjectNginxDir/nginx.conf" "$nginxSitesAvailableDir"
 
         if [[ -n $remoteProjectNginxIncludesDir ]]; then
             rm -rf "$nginxSitesIncludeDir"
