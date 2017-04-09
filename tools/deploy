@@ -125,7 +125,7 @@ release() {
         rm -f "$nginxSitesAvailableConf"
         cp "$remoteProjectNginxDir/nginx.conf" "$nginxSitesAvailableConf"
 
-        ln -fn \
+        ln -sfn \
             "$nginxSitesAvailableConf" \
             "$nginxDir/sites-enabled/$PROJECT_NAME.conf"
 

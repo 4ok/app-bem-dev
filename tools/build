@@ -246,7 +246,7 @@ createNginxConfig() {
 
     mkdir -p "$releaseConfigNginxDir"
 
-    "$NODE" "$TOOLS_DIR"/replace-vars.js \
+    NODE_ENV=production "$NODE" "$TOOLS_DIR"/replace-vars.js \
         "$NODE_MODULES_DIR"/app-bem-dev/configs/nginx/default.conf \
         "$configNginxDir"/default-vars.js \
         > "$releaseConfigNginxDir"/nginx.conf
