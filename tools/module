@@ -133,18 +133,24 @@ npm_install() {
 # Remove npm modules
 #
 npm_uninstall() {
-    printTitle 'Removing npm modules'
 
-    rm -rf "$NODE_MODULES_DIR"
+    if [[ -f package.json ]]; then
+        printTitle 'Removing npm modules'
+
+        rm -rf "$NODE_MODULES_DIR"
+    fi
 }
 
 #
 # Prune npm modules
 #
 npm_prune() {
-    printTitle 'Pruning npm modules'
 
-    "$NPM" prune
+    if [[ -f package.json ]]; then
+        printTitle 'Pruning npm modules'
+
+        "$NPM" prune
+    fi
 }
 
 ##### Bower #####
@@ -166,18 +172,24 @@ bower_install() {
 # Delete bower modules
 #
 bower_uninstall() {
-    printTitle 'Removing bower modules'
 
-    rm -rf 'bower_modules'
+    if [[ -f bower.json ]]; then
+        printTitle 'Removing bower modules'
+
+        rm -rf 'bower_modules'
+    fi
 }
 
 #
 # Prune bower modules
 #
 bower_prune() {
-    printTitle 'Pruning bower modules'
 
-    "$BOWER" prune "${BOWER_COMMON_ARGS[@]}"
+    if [[ -f bower.json ]]; then
+        printTitle 'Pruning bower modules'
+
+        "$BOWER" prune "${BOWER_COMMON_ARGS[@]}"
+    fi
 }
 
 ########################################################
