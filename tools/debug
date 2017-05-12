@@ -73,7 +73,7 @@ process() {
 logs() {
     printTitle 'Application logs'
 
-    "$PROCESS_MANAGER" logs "$PROJECT_NAME"
+    "$PROCESS_MANAGER" logs "$PROJECT_NAME" --timestamp 'YYYY-MM-DD HH:mm:ss.ms'
 }
 
 
