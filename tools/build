@@ -122,8 +122,7 @@ copyFiles() {
 
     cp index.js "$BUILD_RELATIVE_DIR"
 
-    cp -r routes "$BUILD_RELATIVE_DIR"
-    cp -r src "$BUILD_RELATIVE_DIR"
+    cp -r app "$BUILD_RELATIVE_DIR"
 
     if [[ -d data ]]; then
         cp -r data "$BUILD_RELATIVE_DIR"
