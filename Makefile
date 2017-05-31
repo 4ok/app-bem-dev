@@ -165,9 +165,9 @@ clean:
 ###                    Other rules                   ###
 ########################################################
 
-# Finalization project
-.PHONY: final
-final:
+# Descruct the project
+.PHONY: destruct
+destruct:
 	$(APP_TOOL) stop
 	$(BUILD_TOOL) remove
 	$(BEM_TOOL) clean
