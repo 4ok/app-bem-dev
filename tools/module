@@ -122,7 +122,6 @@ npm_install() {
     if [[ -f package.json ]]; then
         printTitle "Installing npm modules (env: $NODE_ENV)"
 
-        "$NPM" cache clean
         "$NPM" install "--$NODE_ENV"
 
         npm_prune
