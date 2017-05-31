@@ -123,8 +123,6 @@ npm_install() {
         printTitle "Installing npm modules (env: $NODE_ENV)"
 
         "$NPM" install "--$NODE_ENV"
-
-        npm_prune
     fi
 }
 
@@ -162,8 +160,6 @@ bower_install() {
 
         "$BOWER" cache clean "${BOWER_COMMON_ARGS[@]}"
         "$BOWER" install --force-latest "${BOWER_COMMON_ARGS[@]}"
-
-        bower_prune
     fi
 }
 
