@@ -61,7 +61,7 @@ help() {
     echo "$HELP"
 }
 
-# Assemble bem project
+# Assemble a bem project
 make() {
     removeStaticDir
 
@@ -86,9 +86,9 @@ make() {
           "$BEM_RELATIVE_DIR/.borschik"
 }
 
-# Remove a static directory
+# Remove a bem static directory
 removeStaticDir() {
-    printTitle 'Removing the static dir'
+    printTitle 'Removing the bem static directory'
 
     rm -rf 'public/static'
 }
