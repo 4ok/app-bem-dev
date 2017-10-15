@@ -14,14 +14,14 @@
 ###                     Variables                    ###
 ########################################################
 
-# Development tools
-DEV_TOOLS := @ . node_modules/app-bem-dev/tools
+# Tools directory
+TOOLS_DIR := @ . node_modules/app-bem-dev/tools
 
 # Bem tool
-BEM_TOOL := $(DEV_TOOLS)/bem
+BEM_TOOL := $(TOOLS_DIR)/bem
 
 # Build tool
-BUILD_TOOL := $(DEV_TOOLS)/build
+BUILD_TOOL := $(TOOLS_DIR)/build
 
 ########################################################
 ###                     Bem rules                    ###
