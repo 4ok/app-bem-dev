@@ -1,3 +1,6 @@
 # System files
 .idea/
 .DS_Store
+
+# Libraries
+node_modules/

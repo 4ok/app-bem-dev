@@ -1,4 +1,7 @@
+/* eslint-disable import/no-unresolved */
 const config = require('config');
+/* eslint-enable import/no-unresolved */
+
 const projectName = process.env.PROJECT_NAME;
 const domain = projectName + '.ru';
 

@@ -1,6 +1,7 @@
 const path = require('path');
 
 // Enb technologies
+/* eslint-disable import/no-extraneous-dependencies, import/no-unresolved */
 const enbBaseTechs = require('enb-bem-techs');
 const enbFileProvide = require('enb/techs/file-provider');
 const enbBorschik = require('enb-borschik/techs/borschik');
@@ -11,13 +12,10 @@ const enbBrowserJs = require('enb-js/techs/browser-js');
 const enbFileMerge = require('enb/techs/file-merge');
 const enbBemtree = require('enb-bemxjst/techs/bemtree');
 const enbBemhtml = require('enb-bemxjst/techs/bemhtml');
-
-// Postcss plugins
-const postcss = {
-    import : require('postcss-import'),
-    cssnext : require('postcss-cssnext'),
-    sharps : require('sharps').postcss,
-};
+const postcssImport = require('postcss-import');
+const postcssCssnext = require('postcss-cssnext');
+const postcssSharps = require('sharps').postcss;
+/* eslint-enable import/no-extraneous-dependencies, import/no-unresolved */
 
 // Final technologies
 const FINAL_TECHS = {
@@ -270,9 +268,9 @@ module.exports = class {
 
         if (FINAL_TECHS.css) {
             result = [
-                postcss.import,
-                postcss.cssnext,
-                postcss.sharps({
+                postcssImport,
+                postcssCssnext,
+                postcssSharps({
                     columns : 12,
                     maxWidth : '1400px',
                     gutter : '1rem',

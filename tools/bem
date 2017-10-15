@@ -65,7 +65,7 @@ help() {
 make() {
     removeStaticDir
 
-    printTitle 'Creating bem configs'
+    printTitle 'Creating a bem config'
 
     ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/borschik.json" "$PWD/$BEM_RELATIVE_DIR/.borschik"
 
@@ -75,7 +75,7 @@ make() {
 
     printTitle 'Freezing links'
 
-    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/links.json" "$PWD/$BEM_RELATIVE_DIR/links.tmp.json"
+    ln -sf "$PWD/$NODE_MODULES_DIR/app-bem-dev/configs/bem/links.json" "$PWD/$BEM_RELATIVE_DIR/links.tmp.json"
 
     "$BORSCHIK" \
         -t json \
@@ -88,7 +88,7 @@ make() {
 
 # Remove a bem static directory
 removeStaticDir() {
-    printTitle 'Removing the bem static directory'
+    printTitle 'Removing a bem static directory'
 
     rm -rf 'public/static'
 }
@@ -97,7 +97,7 @@ removeStaticDir() {
 clean() {
     removeStaticDir
 
-    printTitle 'Removing bem configs'
+    printTitle 'Removing a bem config'
 
     rm -f "$BEM_RELATIVE_DIR/.borschik" \
           "$BEM_RELATIVE_DIR/links.json"

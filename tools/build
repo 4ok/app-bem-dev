@@ -9,7 +9,7 @@ Release.
 
 Usage:
 
-    release [action]
+    build [action]
 
 Parameters:
 
@@ -32,17 +32,11 @@ fi
 
 # Build name
 if [[ -z $BUILD_NAME ]]; then
-    BUILD_NAME='release'
+    BUILD_NAME='build'
 fi
 
-# Node directories
-NODE_BIN_DIR=(
-    '/usr/bin'
-    '/usr/local/bin'
-)
-
 # Node
-NODE=$(find "${NODE_BIN_DIR[@]}" -name 'node' \( -type f -o -type l \))
+NODE=node
 
 # Node modules directory
 NODE_MODULES_DIR='node_modules'
