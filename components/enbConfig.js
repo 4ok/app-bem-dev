@@ -19,38 +19,38 @@ const postcssSharps = require('sharps').postcss;
 
 // Final technologies
 const FINAL_TECHS = {
-    css : {
-        sourceSuffixes : ['styl', 'css', 'post.css'],
-        target : '?.css',
-        borschik : {
-            target : '?.min.css',
-            tech : 'cleancss',
+    css: {
+        sourceSuffixes: ['styl', 'css', 'post.css'],
+        target: '?.css',
+        borschik: {
+            target: '?.min.css',
+            tech: 'cleancss',
         },
     },
-    'browser-js' : {
-        sourceSuffixes : ['js', 'vanilla.js', 'browser.js'],
-        target : '?.browser.js',
-        borschik : {
-            target : '?.browser.min.js',
-            tech : 'js',
+    'browser-js': {
+        sourceSuffixes: ['js', 'vanilla.js', 'browser.js'],
+        target: '?.browser.js',
+        borschik: {
+            target: '?.browser.min.js',
+            tech: 'js',
         },
     },
-    bemtree : {
-        sourceSuffixes : 'bemtree.js',
-        target : '?.bemtree.js',
-        borschik : {
-            target : '?.bemtree.min.js',
-            tech : 'js',
-            minify : false, // TODO: uglify no support es6
+    bemtree: {
+        sourceSuffixes: 'bemtree.js',
+        target: '?.bemtree.js',
+        borschik: {
+            target: '?.bemtree.min.js',
+            tech: 'js',
+            minify: false, // TODO: uglify no support es6
         },
     },
-    bemhtml : {
-        sourceSuffixes : ['bemhtml.js', 'bemhtml'],
-        target : '?.bemhtml.js',
-        borschik : {
-            target : '?.bemhtml.min.js',
-            tech : 'js',
-            minify : false, // TODO: uglify no support es6
+    bemhtml: {
+        sourceSuffixes: ['bemhtml.js', 'bemhtml'],
+        target: '?.bemhtml.js',
+        borschik: {
+            target: '?.bemhtml.min.js',
+            tech: 'js',
+            minify: false, // TODO: uglify no support es6
         },
     },
 };
@@ -73,25 +73,27 @@ module.exports = class {
     }
 
     _addTechsAndTargets(levels) {
-        this._config.nodes(this._nodes, nodeConfig => {
+        this._config.nodes(this._nodes, (nodeConfig) => {
             nodeConfig.addTechs(this._getTechs(levels));
             nodeConfig.addTargets(this._getTargets());
         });
     }
 
     _getTechs(levels) {
-        return [].concat(
-            this._getFilesTechs(levels),
+        /* eslint-disable no-underscore-dangle */
+        return [].concat([
+            this.constructor._getFilesTechs(levels),
             this._getCssTechs(),
-            this._getBrowserJsTechs(),
-            this._getBrowserBemhtmlTechs(),
-            this._getBemtreeTechs(),
-            this._getServerBemhtmlTechs(),
-            this._getOptimizationTechs()
-        );
+            this.constructor._getBrowserJsTechs(),
+            this.constructor._getBrowserBemhtmlTechs(),
+            this.constructor._getBemtreeTechs(),
+            this.constructor._getServerBemhtmlTechs(),
+            this._getOptimizationTechs(),
+        ]);
+        /* eslint-enable no-underscore-dangle */
     }
 
-    _getTargets() {
+    static _getTargets() {
         return Object
             .keys(FINAL_TECHS)
             .reduce((result, key) => {
@@ -109,7 +111,7 @@ module.exports = class {
     _addTasks() {
         Object
             .keys(FINAL_TECHS)
-            .forEach(key => {
+            .forEach((key) => {
                 const tech = FINAL_TECHS[key];
                 const target = tech.borschik
                     ? tech.borschik.target
@@ -121,20 +123,20 @@ module.exports = class {
 
     _addTask(taskName, fileSuffix) {
 
-        this._config.task(taskName, task =>
+        this._config.task(taskName, (task) => {
 
-            task.buildTargets(this._nodes.map(node => {
+            task.buildTargets(this._nodes.map((node) => {
                 const fileName = path.basename(node) + '.' + fileSuffix;
 
                 return path.join(node, fileName);
-            }))
-        );
+            }));
+        });
     }
 
-    _getFilesTechs(levels) {
+    static _getFilesTechs(levels) {
         return [
             [enbFileProvide, {
-                target : '?.bemdecl.js',
+                target: '?.bemdecl.js',
             }],
             [enbBaseTechs.levels, {
                 levels,
@@ -144,15 +146,15 @@ module.exports = class {
         ];
     }
 
-    _getBemtreeTechs() {
+    static _getBemtreeTechs() {
         const tech = FINAL_TECHS.bemtree;
         let result = [];
 
         if (tech) {
             result = [
                 [enbBemtree, {
-                    sourceSuffixes : tech.sourceSuffixes,
-                    target : tech.target,
+                    sourceSuffixes: tech.sourceSuffixes,
+                    target: tech.target,
                 }],
             ];
         }
@@ -160,15 +162,15 @@ module.exports = class {
         return result;
     }
 
-    _getServerBemhtmlTechs() {
+    static _getServerBemhtmlTechs() {
         const tech = FINAL_TECHS.bemhtml;
         let result = [];
 
         if (tech) {
             result = [
                 [enbBemhtml, {
-                    sourceSuffixes : tech.sourceSuffixes,
-                    target : tech.target,
+                    sourceSuffixes: tech.sourceSuffixes,
+                    target: tech.target,
                 }],
             ];
         }
@@ -176,28 +178,28 @@ module.exports = class {
         return result;
     }
 
-    _getBrowserBemhtmlTechs() {
+    static _getBrowserBemhtmlTechs() {
         let result = [];
 
         if (FINAL_TECHS['browser-js']) {
             result = [
                 [enbBaseTechs.depsByTechToBemdecl, {
-                    target : '?.bemhtml.bemdecl.js',
-                    sourceTech : 'js',
-                    destTech : 'bemhtml',
+                    target: '?.bemhtml.bemdecl.js',
+                    sourceTech: 'js',
+                    destTech: 'bemhtml',
                 }],
                 [enbBaseTechs.deps, {
-                    target : '?.bemhtml.deps.js',
-                    bemdeclFile : '?.bemhtml.bemdecl.js',
+                    target: '?.bemhtml.deps.js',
+                    bemdeclFile: '?.bemhtml.bemdecl.js',
                 }],
                 [enbBaseTechs.files, {
-                    depsFile : '?.bemhtml.deps.js',
-                    filesTarget : '?.bemhtml.files',
-                    dirsTarget : '?.bemhtml.dirs',
+                    depsFile: '?.bemhtml.deps.js',
+                    filesTarget: '?.bemhtml.files',
+                    dirsTarget: '?.bemhtml.dirs',
                 }],
                 [enbBemhtml, {
-                    target : '?.browser.bemhtml.js',
-                    filesTarget : '?.bemhtml.files',
+                    target: '?.browser.bemhtml.js',
+                    filesTarget: '?.bemhtml.files',
                 }],
             ];
         }
@@ -205,7 +207,7 @@ module.exports = class {
         return result;
     }
 
-    _getBrowserJsTechs() {
+    static _getBrowserJsTechs() {
         const tech = FINAL_TECHS['browser-js'];
         let result = [];
 
@@ -213,23 +215,23 @@ module.exports = class {
 
             result = [
                 [enbBrowserJs, {
-                    sourceSuffixes : tech.sourceSuffixes,
-                    target : '?.browser.ym.js',
-                    includeYM : true,
+                    sourceSuffixes: tech.sourceSuffixes,
+                    target: '?.browser.ym.js',
+                    includeYM: true,
                 }],
                 [enbFileMerge, {
-                    sources : [
+                    sources: [
                         '?.browser.ym.js',
                         '?.browser.bemhtml.js',
                     ],
-                    target : '?.browser.ym+bemhtml.js',
+                    target: '?.browser.ym+bemhtml.js',
                 }],
                 [enbBabelBrowserJs, {
-                    sourceTarget : '?.browser.ym+bemhtml.js',
-                    target : tech.target,
-                    babelOptions : {
-                        compact : false,
-                        presets : [
+                    sourceTarget: '?.browser.ym+bemhtml.js',
+                    target: tech.target,
+                    babelOptions: {
+                        compact: false,
+                        presets: [
                             'es2015',
                         ],
                     },
@@ -247,15 +249,15 @@ module.exports = class {
         if (tech) {
             result = [
                 [enbStylus, {
-                    sourceSuffixes : tech.sourceSuffixes,
-                    target : '?.pre.css',
-                    imports : false,
+                    sourceSuffixes: tech.sourceSuffixes,
+                    target: '?.pre.css',
+                    imports: false,
                 }],
                 [enbPostcss, {
-                    source : '?.pre.css',
-                    target : tech.target,
-                    sourcemap : this._isSourcemap,
-                    plugins : this._getPostcssPlugins(),
+                    source: '?.pre.css',
+                    target: tech.target,
+                    sourcemap: this._isSourcemap,
+                    plugins: this._getPostcssPlugins(),
                 }],
             ];
         }
@@ -263,7 +265,7 @@ module.exports = class {
         return result;
     }
 
-    _getPostcssPlugins() {
+    static _getPostcssPlugins() {
         let result = [];
 
         if (FINAL_TECHS.css) {
@@ -271,10 +273,10 @@ module.exports = class {
                 postcssImport,
                 postcssCssnext,
                 postcssSharps({
-                    columns : 12,
-                    maxWidth : '1400px',
-                    gutter : '1rem',
-                    flex : 'flex',
+                    columns: 12,
+                    maxWidth: '1400px',
+                    gutter: '1rem',
+                    flex: 'flex',
                 }),
             ];
         }
@@ -290,8 +292,8 @@ module.exports = class {
 
                 if (tech.borschik) {
                     const item = Object.assign({
-                        source : tech.target,
-                        minify : this._isMinify,
+                        source: tech.target,
+                        minify: this._isMinify,
                     }, tech.borschik);
 
                     result.push([enbBorschik, item]);
