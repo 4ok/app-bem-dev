@@ -55,33 +55,29 @@ const FINAL_TECHS = {
     },
 };
 
-const getTargets = () => {
-    return Object
-        .keys(FINAL_TECHS)
-        .reduce((result, key) => {
-            const tech = FINAL_TECHS[key];
-            const target = tech.borschik
-                ? tech.borschik.target
-                : tech.target;
+const getTargets = () => Object
+    .keys(FINAL_TECHS)
+    .reduce((result, key) => {
+        const tech = FINAL_TECHS[key];
+        const target = tech.borschik
+            ? tech.borschik.target
+            : tech.target;
 
-            result.push(target);
+        result.push(target);
 
-            return result;
-        }, []);
-};
+        return result;
+    }, []);
 
-const getFilesTechs = (levels) => {
-    return [
-        [enbFileProvide, {
-            target: '?.bemdecl.js',
-        }],
-        [enbBaseTechs.levels, {
-            levels,
-        }],
-        [enbBaseTechs.deps],
-        [enbBaseTechs.files],
-    ];
-};
+const getFilesTechs = levels => [
+    [enbFileProvide, {
+        target: '?.bemdecl.js',
+    }],
+    [enbBaseTechs.levels, {
+        levels,
+    }],
+    [enbBaseTechs.deps],
+    [enbBaseTechs.files],
+];
 
 const getBemtreeTechs = () => {
     const tech = FINAL_TECHS.bemtree;
@@ -218,7 +214,7 @@ module.exports = class {
     _addTechsAndTargets(levels) {
         this._config.nodes(this._nodes, (nodeConfig) => {
             nodeConfig.addTechs(this._getTechs(levels));
-            nodeConfig.addTargets(this.getTargets());
+            nodeConfig.addTargets(getTargets());
         });
     }
 
