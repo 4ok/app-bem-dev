@@ -219,15 +219,15 @@ module.exports = class {
     }
 
     _getTechs(levels) {
-        return [].concat([
+        return [].concat(
             getFilesTechs(levels),
             this._getCssTechs(),
             getBrowserJsTechs(),
             getBrowserBemhtmlTechs(),
             getBemtreeTechs(),
             getServerBemhtmlTechs(),
-            this._getOptimizationTechs(),
-        ]);
+            this._getOptimizationTechs()
+        );
     }
 
     _addTasks() {
