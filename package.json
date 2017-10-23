@@ -12,7 +12,7 @@
   },
   "peerDependencies": {
     "bem-core": "github:4ok/bem-core#issue-1322",
-    "config": "^1.26.2"
+    "config": "^1.27.0"
   },
   "scripts": {
     "lint": "node_modules/.bin/eslint ."
