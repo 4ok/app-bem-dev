@@ -47,6 +47,12 @@ NODE_MODULES_BIN_DIR="$NODE_MODULES_DIR/.bin"
 # Tools directory
 TOOLS_DIR=$(dirname "$0")
 
+# Tool module
+TOOL_MODULE="$TOOLS_DIR/module"
+
+# Tool "replace vars"
+TOOL_REPLACE_VARS="$TOOLS_DIR/replace-vars.js"
+
 # Configs directory
 CONFIGS_RELATIVE_DIR='configs'
 
@@ -218,7 +224,7 @@ installModules() {
     cp package.json "$BUILD_RELATIVE_DIR"
 
     # Installation production modules
-    "$TOOLS_DIR/module" install "$BUILD_RELATIVE_DIR"
+    "$TOOL_MODULE" install "$BUILD_RELATIVE_DIR"
 
     printTitle 'Removing installation instructions files'
 
@@ -239,10 +245,10 @@ createNginxConfig() {
 
     mkdir -p "$releaseConfigNginxDir"
 
-    NODE_ENV=production "$NODE" "$TOOLS_DIR"/replace-vars.js \
-        "$NODE_MODULES_DIR"/app-bem-dev/configs/nginx/default.conf \
-        "$configNginxDir"/default-vars.js \
-        > "$releaseConfigNginxDir"/nginx.conf
+    NODE_ENV=production "$NODE" "$TOOL_REPLACE_VARS/replace-vars.js" \
+        "$NODE_MODULES_DIR/app-bem-dev/configs/nginx/default.conf" \
+        "$configNginxDir/default-vars.js" \
+        > "$releaseConfigNginxDir/nginx.conf"
 
     if [[ -d $configNginxIncludesDir ]]; then
         printTitle 'Copying nginx includes'
