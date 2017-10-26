@@ -50,6 +50,13 @@ printTitle() {
     echo "===> $1"
 }
 
+# Remove a bem static directory
+removeStaticDir() {
+    printTitle 'Removing a bem static directory'
+
+    rm -rf 'public/static'
+}
+
 ########################################################
 ###                      Actions                     ###
 ########################################################
@@ -87,13 +94,11 @@ make() {
 
 # Clean
 clean() {
+    removeStaticDir
+
     printTitle 'Removing bundle files'
 
     "$NODE_MODULES_BIN_DIR/enb" make clean --dir "$BEM_RELATIVE_DIR"
-
-    printTitle 'Removing a bem static directory'
-
-    rm -rf 'public/static'
 
     printTitle 'Removing a bem config'
 

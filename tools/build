@@ -5,7 +5,7 @@
 ########################################################
 
 HELP='
-Release.
+Build.
 
 Usage:
 
@@ -15,10 +15,10 @@ Parameters:
 
     * action
 
-        Release action.
+        Build action.
 
-        - create   Create a release build.
-        - remove   Remove a release build.
+        - create   Create a build.
+        - remove   Remove a build.
 '
 
 ########################################################
@@ -173,7 +173,7 @@ printImagesList() {
 #
 printOptimizeImagesResult() {
     local imagesSizeBefore=$(printTotalSize "$PUBLIC_RELATIVE_DIR")
-    local imagesSizeAfter=$(printTotalSize "release/$PUBLIC_RELATIVE_DIR")
+    local imagesSizeAfter=$(printTotalSize "$BUILD_RELATIVE_DIR/$PUBLIC_RELATIVE_DIR")
     local imagesSizeDifference=$(echo "$imagesSizeBefore - $imagesSizeAfter" | bc)
     local imagesSizePercentDifference=$(echo "$imagesSizeDifference * 100 / $imagesSizeBefore" | bc | xargs -I '{}' echo '{}%%')
 
@@ -238,32 +238,32 @@ createNginxConfig() {
     local nginxRelativeDir='nginx'
     local configNginxDir="$CONFIGS_RELATIVE_DIR"/"$nginxRelativeDir"
     local configNginxIncludesDir="$configNginxDir"/includes
-    local releaseConfigNginxDir="$BUILD_RELATIVE_DIR"/"$CONFIGS_RELATIVE_DIR"/"$nginxRelativeDir"
-    local releaseConfigNginxIncludesDir="$releaseConfigNginxDir"/includes
+    local buildConfigNginxDir="$BUILD_RELATIVE_DIR"/"$CONFIGS_RELATIVE_DIR"/"$nginxRelativeDir"
+    local buildConfigNginxIncludesDir="$buildConfigNginxDir"/includes
 
     printTitle 'Creating a nginx config'
 
-    mkdir -p "$releaseConfigNginxDir"
+    mkdir -p "$buildConfigNginxDir"
 
     NODE_ENV=production "$NODE" "$TOOL_REPLACE_VARS/replace-vars.js" \
         "$NODE_MODULES_DIR/app-bem-dev/configs/nginx/default.conf" \
         "$configNginxDir/default-vars.js" \
-        > "$releaseConfigNginxDir/nginx.conf"
+        > "$buildConfigNginxDir/nginx.conf"
 
     if [[ -d $configNginxIncludesDir ]]; then
         printTitle 'Copying nginx includes'
 
-        mkdir -p "$releaseConfigNginxIncludesDir"
-        cp "$configNginxIncludesDir"/* "$releaseConfigNginxIncludesDir"
+        mkdir -p "$buildConfigNginxIncludesDir"
+        cp "$configNginxIncludesDir"/* "$buildConfigNginxIncludesDir"
     fi
 }
 
 #
-# Create a release archive
+# Create a build archive
 #
 createArchive() {
 
-    printTitle 'Creating a release archive'
+    printTitle 'Creating a build archive'
     tar -czf "$BUILD_RELATIVE_ARCHIVE" "$BUILD_RELATIVE_DIR"
 }
 
@@ -279,7 +279,7 @@ help() {
 }
 
 #
-# Create a release build
+# Create a build
 #
 create() {
     remove
@@ -294,10 +294,10 @@ create() {
 }
 
 #
-# Remove a release build
+# Remove a build
 #
 remove() {
-    printTitle 'Removing a release directory'
+    printTitle 'Removing a build directory'
 
     rm -rf "$BUILD_RELATIVE_DIR" "$BUILD_RELATIVE_ARCHIVE"
 }
