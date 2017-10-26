@@ -63,14 +63,6 @@ help() {
 }
 
 #
-# Lint all files
-#
-all() {
-    stylus
-    js
-}
-
-#
 # Lint stylus files
 #
 # @1 {string} Lint path
@@ -95,7 +87,7 @@ js() {
 ########################################################
 
 case "$1" in
-    all|stylus|js)
+    stylus|js)
         $1 "$2"
     ;;
     *)

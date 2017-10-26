@@ -66,8 +66,7 @@ build.remove:
 
 # Lint all files
 .PHONY: lint
-lint:
-	$(LINT_TOOL) all
+lint: lint.css lint.js
 
 # Lint css files
 .PHONY: lint.css
