@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+########################################################
+###                        Help                      ###
+########################################################
+
+HELP='
+Lint actions.
+
+Usage:
+
+    lint [action]
+
+Parameters:
+
+    * action
+
+        Lint action.
+
+        - lint          Lint all files.
+        - lint.stylus   Lint stylus files.
+        - lint.js       Lint javascript files.
+'
+
+########################################################
+###                     Variables                    ###
+########################################################
+
+# Node modules directory
+NODE_MODULES_DIR='node_modules'
+
+# Node modules binary directory
+NODE_MODULES_BIN_DIR="$NODE_MODULES_DIR/.bin"
+
+# Eslint
+ESLINT="$NODE_MODULES_BIN_DIR/eslint"
+
+# Stylint
+STYLINT="$NODE_MODULES_BIN_DIR/stylint"
+
+########################################################
+###                      Helpers                     ###
+########################################################
+
+#
+# Print a title of action
+#
+# @1 {string} Title
+#
+printTitle() {
+    echo "===> $1"
+}
+
+########################################################
+###                     Actions                      ###
+########################################################
+
+#
+# Help
+#
+help() {
+    echo "$HELP"
+}
+
+#
+# Lint all files
+#
+all() {
+    stylus
+    js
+}
+
+#
+# Lint stylus files
+#
+# @1 {string} Lint path
+#
+stylus() {
+    printTitle 'Linting stylus files'
+
+    "$STYLINT" --config "$NODE_MODULES_DIR/stylint-config-4ok/.configrc" "$1"
+}
+
+#
+# Lint javascript files
+#
+js() {
+    printTitle 'Linting javascript files'
+
+    "$ESLINT" --fix '.'
+}
+
+########################################################
+###                    Call action                   ###
+########################################################
+
+case "$1" in
+    all|stylus|js)
+        $1 "$2"
+    ;;
+    *)
+        help
+    ;;
+esac
