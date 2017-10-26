@@ -9,6 +9,12 @@
 #		build			Create a build
 #		build.remove	Remove a build
 #
+#    Lint:
+#
+# 		   lint       			Lint all files
+# 		   lint.stylus			Lint stylus files
+# 		   lint.js       		Lint javascript files
+#
 
 ########################################################
 ###                     Variables                    ###
@@ -22,6 +28,9 @@ BEM_TOOL := $(TOOLS_DIR)/bem
 
 # Build tool
 BUILD_TOOL := $(TOOLS_DIR)/build
+
+# Lint tool
+LINT_TOOL := $(TOOLS_DIR)/lint
 
 ########################################################
 ###                     Bem rules                    ###
@@ -50,3 +59,23 @@ build:
 .PHONY: build.remove
 build.remove:
 	$(BUILD_TOOL) remove
+
+########################################################
+###                    Lint rules                    ###
+########################################################
+
+# Lint all files
+.PHONY: lint
+lint:
+	$(LINT_TOOL) all
+
+# Lint css files
+.PHONY: lint.css
+lint.css:
+	$(LINT_TOOL) stylus bem/blocks
+
+# Lint javascript files
+.PHONY: lint.js
+lint.js:
+	$(LINT_TOOL) js
+
