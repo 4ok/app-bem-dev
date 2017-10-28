@@ -264,7 +264,6 @@ module.exports = class {
                 [enbStylus, {
                     sourceSuffixes: tech.sourceSuffixes,
                     target: '?.pre.css',
-                    imports: false,
                 }],
                 [enbPostcss, {
                     source: '?.pre.css',
