@@ -15,6 +15,7 @@ const enbBemhtml = require('enb-bemxjst/techs/bemhtml');
 const postcssImport = require('postcss-import');
 const postcssCssnext = require('postcss-cssnext');
 const postcssSharps = require('sharps').postcss;
+const postcssFor = require('postcss-for');
 /* eslint-enable import/no-extraneous-dependencies, import/no-unresolved */
 
 // Final technologies
@@ -180,6 +181,7 @@ const getPostcssPlugins = () => {
 
     if (FINAL_TECHS.css) {
         result = [
+            postcssFor,
             postcssImport,
             postcssCssnext,
             postcssSharps({
