@@ -1,14 +1,20 @@
-/* eslint-disable import/no-unresolved */
-const config = require('config');
-/* eslint-enable import/no-unresolved */
+const DEFAULT_TOP_DOMAIN = 'ru';
+const MIRROR_DOMAIN_PROLOG = 'www';
 
-const projectName = process.env.PROJECT_NAME;
-const domain = projectName + '.ru';
+module.exports = (config) => {
+    const {
+        projectName,
+        server,
+    } = config;
 
-module.exports = {
-    MAIN_DOMAIN: domain,
-    MIRROR_DOMAIN: 'www.' + domain,
-    PROXY_HOST: config.server.host,
-    PROXY_PORT: config.server.port,
-    PROJECT_NAME: projectName,
+    const topDomain = config.topDomain || DEFAULT_TOP_DOMAIN;
+    const domain = projectName + '.' + topDomain;
+
+    return {
+        MAIN_DOMAIN: domain,
+        MIRROR_DOMAIN: MIRROR_DOMAIN_PROLOG + '.' + domain,
+        PROXY_HOST: server.host,
+        PROXY_PORT: server.port,
+        PROJECT_NAME: projectName,
+    };
 };
