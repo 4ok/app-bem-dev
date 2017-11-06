@@ -105,6 +105,9 @@ const getServerBemhtmlTechs = () => {
             [enbBemhtml, {
                 sourceSuffixes: tech.sourceSuffixes,
                 target: tech.target,
+                engineOptions: {
+                    elemJsInstances: true,
+                },
             }],
         ];
     }
