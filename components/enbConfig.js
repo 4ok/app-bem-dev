@@ -23,7 +23,7 @@ const postcssRebemCss = require('rebem-css');
 // Final technologies
 const FINAL_TECHS = {
     css: {
-        sourceSuffixes: ['styl', 'post.css'],
+        sourceSuffixes: ['styl', 'css', 'post.css'],
         target: '?.css',
         borschik: {
             target: '?.min.css',
