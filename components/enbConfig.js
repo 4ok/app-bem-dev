@@ -12,16 +12,18 @@ const enbBrowserJs = require('enb-js/techs/browser-js');
 const enbFileMerge = require('enb/techs/file-merge');
 const enbBemtree = require('enb-bemxjst/techs/bemtree');
 const enbBemhtml = require('enb-bemxjst/techs/bemhtml');
+
 const postcssImport = require('postcss-import');
 const postcssCssnext = require('postcss-cssnext');
 const postcssSharps = require('sharps').postcss;
 const postcssFor = require('postcss-for');
+const postcssRebemCss = require('rebem-css');
 /* eslint-enable import/no-extraneous-dependencies, import/no-unresolved */
 
 // Final technologies
 const FINAL_TECHS = {
     css: {
-        sourceSuffixes: ['styl', 'css', 'post.css'],
+        sourceSuffixes: ['styl', 'post.css'],
         target: '?.css',
         borschik: {
             target: '?.min.css',
@@ -184,6 +186,7 @@ const getPostcssPlugins = () => {
 
     if (FINAL_TECHS.css) {
         result = [
+            postcssRebemCss,
             postcssFor,
             postcssImport,
             postcssCssnext,
