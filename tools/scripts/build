@@ -250,7 +250,7 @@ createNginxConfig() {
 
     NODE_ENV=production "$NODE" "$SCRIPT_REPLACE_VARS" \
         "$NODE_MODULES_DIR/app-core-dev/configs/nginx/default.conf" \
-        "$configNginxDir/default-vars.js" \
+        "$configNginxDir/vars.js" \
         > "$buildConfigNginxDir/nginx.conf"
 
     if [[ -d $configNginxIncludesDir ]]; then
