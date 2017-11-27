@@ -47,14 +47,14 @@ NODE_MODULES_BIN_DIR="$NODE_MODULES_DIR/.bin"
 # Scripts directory
 SCRIPTS_DIR="$NODE_MODULES_DIR/app-bem-dev/tools/scripts"
 
-# Shared scripts directory
-SHARED_SCRIPTS_DIR="$SCRIPTS_DIR/shared"
+# Core scripts directory
+CORE_SCRIPTS_DIR="$NODE_MODULES_DIR/app-core-dev/tools/scripts"
 
 # Module script
-SCRIPT_MODULE="$SHARED_SCRIPTS_DIR/module"
+SCRIPT_MODULE="$CORE_SCRIPTS_DIR/module"
 
 # Script for replacing vars
-SCRIPT_REPLACE_VARS="$SHARED_SCRIPTS_DIR/replace-vars.js"
+SCRIPT_REPLACE_VARS="$CORE_SCRIPTS_DIR/replace-vars.js"
 
 # Configs directory
 CONFIGS_RELATIVE_DIR='configs'
